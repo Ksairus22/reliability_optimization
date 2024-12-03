@@ -12,7 +12,7 @@ function [lambdaB, kPr, kR, kF, kS1, kE] = getCoefTransistorFromData(Data, rownu
         % technicalConditions = rowData.technicalConditions{1};
         tTrMax = rowData.tTrMax;
         tLow = rowData.tLow;
-        lambdaB = rowData.lambdaB;
+        lambdaB = (rowData.lambdaB)*1e-6;
     else
         error("Ошибка: Номер строки вне диапазона: "+num2str(rownum));
     end

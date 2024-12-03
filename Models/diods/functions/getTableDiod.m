@@ -15,7 +15,7 @@ function [num, partName, type, groupKey, technicalConditions, lambdaB] = getTabl
             type = rowData.type{1};
             groupKey = rowData.groupKey; % {1}
             technicalConditions = rowData.technicalConditions{1};
-            lambdaB = (rowData.lambdaB)*1e6;
+            lambdaB = (rowData.lambdaB)*1e-6;
         else
             error("Ошибка: Номер строки вне диапазона: "+num2str(rownum));
         end

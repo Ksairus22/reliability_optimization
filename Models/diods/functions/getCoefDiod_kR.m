@@ -13,5 +13,5 @@ function [kR] = getCoefDiod_kR(iRelative, t)
     tn = 25;    % tn - нормальная температура окружающей среды
     tp0 = tn + 20;
 
-    kR = (iRelative)^m*exp(Ea/k*(1/(tp0 + 273) + 1/(tp + 273)));
+    kR = (iRelative)^m*exp(Ea/k*(1/(tp0 + 273) - 1/(tp + 273)));
 end
