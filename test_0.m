@@ -75,9 +75,9 @@ title('Dependence of Lambda on Capacity and Resistance_k');
 colorbar; % Добавляем цветовую панель для обозначения значений lambda
 %% Оптимизация 
  
-x0 = [200 1e6]; 
-lb = [100 100]; 
-ub = [1e7 1e7]; 
+x0 = [200e-12 1e6]; 
+lb = [100e-12 100]; 
+ub = [1e-1 1e7]; 
 numStarts = 200; 
 %% Multistart
 % [best_params,fval,tElapsed] = run_multistartContRC(DataSystem, IteratorCapacitor, IteratorDiod, IteratorResistor_B, IteratorResistor_K, IteratorTransistor,... 

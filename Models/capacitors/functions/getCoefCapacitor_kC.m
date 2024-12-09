@@ -6,8 +6,8 @@ function [K_c] = getCoefCapacitor_kC(capacity,data_indexed)
     a = str2double(table2array(data_indexed(1,2)));
     if (a == 4) || (a == 5) ||...
             (a == 6) || (a == 7)
-        K_c = K_c_arr(1)*(capacity*1e-6)^K_c_arr(2);
+        K_c = K_c_arr(1)*(capacity*1e6)^K_c_arr(2);
     else
-        K_c = K_c_arr(1)*(capacity)^K_c_arr(2);
+        K_c = K_c_arr(1)*(capacity*1e12)^K_c_arr(2);
     end
 end
