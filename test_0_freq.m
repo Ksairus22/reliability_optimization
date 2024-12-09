@@ -40,9 +40,9 @@ pRelative   = 1/2;
 s1  = 1/2;
 %% Оптимизация 
 goalfreq = 100; 
-x0 = [1 1e6]*1e-12;  
-lb = [1 1]*1e-12; 
-ub = [1e6 1]; 
+x0 = [1e-12 1000];  
+lb = [1e-12 1000]; 
+ub = [1e-3 1e+7]; 
 numStarts = 200; 
 %% Multistart
 % [best_params,fval,tElapsed] = run_multistartContRC_freq(goalfreq, x0, lb, ub, numStarts) 
@@ -58,7 +58,7 @@ numStarts = 200;
 % [best_params, fval, tElapsed] = run_surrogateContRC_freq(goalfreq, lb, ub) 
 % 
 sse_func = @(x, y) 1./(log(2)*(2*x.*y));
-fsurf(sse_func,[1e-26,5])
+fsurf(sse_func,[0,1200],"MeshDensity",100)
 
 
 hold on
