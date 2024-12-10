@@ -1,5 +1,6 @@
 function [best_params, fval, tElapsed] = run_surrogateContRC_freq(goalfreq, lb, ub) 
-    % Оптимизация lambda
+error("Не используется, либо исправить getFunctionSystemUnoCont");
+% Оптимизация lambda
     sse_func = @(x) abs(goalfreq - 1 ./ (log(2) * (2 * x(1) .* x(2))));
 
     % Опции для surrogateopt

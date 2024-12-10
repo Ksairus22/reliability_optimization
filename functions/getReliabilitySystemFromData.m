@@ -1,29 +1,28 @@
-function [lambda] = getReliabilitySystemFromData(DataSystem,...
-    IteratorCapacitor, IteratorDiod, IteratorResistor_B, IteratorResistor_K, IteratorTransistor,...
-    t, capacity, U_ratio, iRelative, power_b, resistance_b, P_ratio_b,...
-    power_k, resistance_k, P_ratio_k, pRelative, s1)
+function [lambda] = getReliabilitySystemFromData(DataSystem, VarSystem)
 
     % Capacitor
     lambda_Capacitor = getReliabilityCapacitorFromData(...
-        DataSystem.Capacitor, IteratorCapacitor,capacity, U_ratio, t);
+        DataSystem.Capacitor, VarSystem.IteratorCapacitor,VarSystem.capacity, ...
+        VarSystem.U_ratio, VarSystem.t);
 
     % Diod
     lambda_Diod = getReliabilityDiodFromData(...
-        DataSystem.Diod, IteratorDiod, iRelative, t);
-    % % Diod
-    % lambda_Diod = 1e-7;
+        DataSystem.Diod, VarSystem.IteratorDiod, VarSystem.iRelative, VarSystem.t);
 
     % Resistor_B
     lambda_Resistor_B = getReliabilityResistorFromData(...
-        DataSystem.Resistor, IteratorResistor_B, power_b, resistance_b, P_ratio_b, t);
+        DataSystem.Resistor, VarSystem.IteratorResistor_B, VarSystem.power_b, ...
+        VarSystem.resistance_b, VarSystem.P_ratio_b, VarSystem.t);
 
     % Resistor_K
     lambda_Resistor_K = getReliabilityResistorFromData(...
-        DataSystem.Resistor, IteratorResistor_K, power_k, resistance_k, P_ratio_k, t);
+        DataSystem.Resistor, VarSystem.IteratorResistor_K, VarSystem.power_k, ...
+        VarSystem.resistance_k, VarSystem.P_ratio_k, VarSystem.t);
 
     % Transistor
     lambda_Transistor = getReliabilityTransistorFromData(...
-        DataSystem.Transistor, IteratorTransistor, pRelative, t, s1);
+        DataSystem.Transistor, VarSystem.IteratorTransistor, ...
+        VarSystem.pRelative, VarSystem.t, VarSystem.s1);
     
     % System
     lambda = lambda_Capacitor*2 + lambda_Diod*2 + lambda_Resistor_B*2 + lambda_Resistor_K*2 + lambda_Transistor*2;

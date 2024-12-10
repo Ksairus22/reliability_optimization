@@ -1,12 +1,6 @@
-function [best_params,fval,tElapsed] = run_globalsearchContRC(DataSystem, IteratorCapacitor, IteratorDiod, IteratorResistor_B, IteratorResistor_K, IteratorTransistor,... 
-                              t, U_ratio, iRelative, power_b, resistance_b, P_ratio_b, power_k, P_ratio_k,... 
-                              pRelative, s1, ... 
-                              x0, lb, ub) 
+function [best_params,fval,tElapsed] = run_globalsearchContRC(DataSystem, VarSystem, x0, lb, ub) 
 % Оптимизация lambda
-sse_func = @(x) getReliabilitySystemFromData(DataSystem,...
-    IteratorCapacitor, IteratorDiod, IteratorResistor_B, IteratorResistor_K, IteratorTransistor,...
-    t, x(1), U_ratio, iRelative, power_b, resistance_b, P_ratio_b,...
-    power_k, x(2), P_ratio_k, pRelative, s1);
+sse_func = @(x) getFunctionSystemUnoCont(x, DataSystem, VarSystem);
 
 
 % Настройка объекта MultiStart для оптимизации
@@ -19,14 +13,9 @@ problem = createOptimProblem('fmincon', ...
     'lb', lb, ... % Нижние границы для A и lambda
     'ub', ub); % Верхние границы для A и lambda
 
-% disp("Start optimization at " + datestr(datetime()));
 tStart = tic;
 
-% Запуск MultiStart
-% numStarts = 100;
 [best_params,fval] = run(gs, problem);
-% disp("Finish optimization at " + datestr(datetime())); 
 tElapsed = toc(tStart); 
-% disp("Elapsed time: " + num2str(tElapsed) + " sec"); 
 
 end

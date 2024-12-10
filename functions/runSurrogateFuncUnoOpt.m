@@ -1,6 +1,4 @@
-function [best_params, fval, tElapsed] = run_surrogateoptDiscr(DataSystem,VarSystem, lb, ub)  
-% Оптимизация lambda 
-sse_func = @(x) getFunctionSystemUnoDiscr(x, DataSystem, VarSystem);
+function [best_params, fval, tElapsed] = runSurrogateFuncUnoOpt(func,DataSystem,VarSystem, lb, ub)  
 
 % Опции для surrogateopt
 opts = optimoptions(@surrogateopt, ... 
@@ -12,7 +10,7 @@ opts = optimoptions(@surrogateopt, ...
 
 tStart = tic; 
 
-[best_params, fval] = surrogateopt(sse_func, lb, ub, 1:5, opts); 
+[best_params, fval] = surrogateopt(func, lb, ub, 1:5, opts); 
 best_params = best_params + 1;  
 tElapsed = toc(tStart);  
 
