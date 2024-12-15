@@ -1,4 +1,6 @@
-function [kR] = getCoefTransistor_kR(tTrMax, tLow, pRelative, t)
+function [kR] = getCoefTransistor_kR(tTrMax, tLow, P, Pnom, t)
+    
+    pRelative = P/Pnom;
     kEl = pRelative;
     % kEl = getCoefTransistor_kEl(pRelative);
 
