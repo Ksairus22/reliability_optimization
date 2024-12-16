@@ -7,5 +7,6 @@ function K_p = getCoefResistor_kp(t, P_ratio, Resistor_struct)
     J = Resistor_struct.J;
     H = Resistor_struct.H;
 
+
     K_p = A*exp(B*((t+273)/Nt).^G).*exp((P_ratio/Ns*((t+273)/273).^J).^H);
 end

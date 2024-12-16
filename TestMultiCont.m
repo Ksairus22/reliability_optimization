@@ -21,24 +21,7 @@ FilenameSystem.Transistors = 'table_reliability_transistor.xlsx';
 % Предварительная загрузка данных 
 [DataSystem] = getTableSystemData(FilenameSystem); 
 
-VarSystem.IteratorCapacitor   = 1;
-VarSystem.IteratorDiod        = 1;
-VarSystem.IteratorResistor_B  = 1;
-VarSystem.IteratorResistor_K  = 1;
-VarSystem.IteratorTransistor  = 1;
-VarSystem.t   = 30;
-VarSystem.capacity    = 1000e-12;
-VarSystem.U_ratio     = 1/2;
-VarSystem.iRelative   = 1/2;
-VarSystem.power_b     = 0.5;
-VarSystem.resistance_b= 200;
-VarSystem.P_ratio_b   = 1/2;
-VarSystem.power_k     = 0.5;
-VarSystem.resistance_k = 200;
-VarSystem.P_ratio_k   = 1/2;
-VarSystem.pRelative   = 1/2;
-VarSystem.s1  = 1/2;
-VarSystem.goalfreq  = 1000;
+[VarSystem] = getVarSystem();
 
 %% optimization
 goalfreq = 1000; 
