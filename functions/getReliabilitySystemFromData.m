@@ -1,6 +1,8 @@
 function [lambda] = getReliabilitySystemFromData(DataSystem, VarSystem)
 
     electric_parameters = calculateCircuitParamsStruct(DataSystem,VarSystem);
+    % electric_parameters.Rb
+    
     % Capacitor
     lambda_Capacitor = getReliabilityCapacitorFromData(...
         DataSystem.Capacitor, VarSystem.IteratorCapacitor,VarSystem.capacity, ...
