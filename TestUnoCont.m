@@ -26,8 +26,8 @@ FilenameSystem.Transistors = 'table_reliability_transistor.xlsx';
 % [lambda] = getReliabilitySystemFromData(DataSystem, VarSystem)
 %% строить поверхность долго
 % Задаем диапазоны значений для capacity и resistance_k
-capacity_range = linspace(1e-12, 1e-1, 200); % от 500 до 1500
-resistance_k_range = linspace(1, 1.1e6, 200); % от 100 до 300
+capacity_range = linspace(1e-12, 1e-1, 100); % от 500 до 1500
+resistance_k_range = linspace(1, 1.1e6, 100); % от 100 до 300
 
 % Создаем сетку значений
 [CapacityGrid, ResistanceKGrid] = meshgrid(capacity_range, resistance_k_range);
@@ -35,15 +35,15 @@ resistance_k_range = linspace(1, 1.1e6, 200); % от 100 до 300
 % Предварительно создаем матрицу для хранения результатов
 lambda_surface = zeros(size(CapacityGrid));
 
-% % Вычисляем lambda для каждой комбинации capacity и resistance_k
-% for i = 1:size(CapacityGrid, 1)
-%     for j = 1:size(CapacityGrid, 2)
-%         [VarSystem] = getVarSystemVariable(VarSystem.IteratorCapacitor, VarSystem.IteratorDiod, VarSystem.IteratorResistor_B, VarSystem.IteratorResistor_BE,...
-%     VarSystem.IteratorResistor_E, VarSystem.IteratorTransistor, VarSystem.t, CapacityGrid(i, j),...
-%     ResistanceKGrid(i, j), VarSystem.resistance_BE, VarSystem.resistance_E, VarSystem.goalfreq)
-%         lambda_surface(i, j) = getReliabilitySystemFromData(DataSystem, VarSystem);
-%     end
-% end
+% Вычисляем lambda для каждой комбинации capacity и resistance_k
+for i = 1:size(CapacityGrid, 1)
+    for j = 1:size(CapacityGrid, 2)
+    %     [VarSystem] = getVarSystemVariable(VarSystem.IteratorCapacitor, VarSystem.IteratorDiod, VarSystem.IteratorResistor_B, VarSystem.IteratorResistor_BE,...
+    % VarSystem.IteratorResistor_E, VarSystem.IteratorTransistor, VarSystem.t, CapacityGrid(i, j),...
+    % ResistanceKGrid(i, j), VarSystem.resistance_BE, VarSystem.resistance_E, VarSystem.goalfreq)
+        lambda_surface(i, j) = getReliabilitySystemFromData(DataSystem, VarSystem);
+    end
+end
 % save("lambda","lambda_surface")
 lambda_surface = load("lambda","lambda_surface");
 % Построение 3D поверхности
@@ -62,29 +62,29 @@ ub = [1e-2 1.1e6];
 numStarts = 200; 
 plot_num = [];
 fig = [];
-%% Multistart
-[best_params,fval,tElapsed] = run_multistartContRC(DataSystem, VarSystem, x0, lb, ub, numStarts) 
-[fig, plot_num] = plotParam(fig, plot_num, best_params, fval, lambda_surface, CapacityGrid, ResistanceKGrid);
-
-%% Globalsearch
-[best_params,fval,tElapsed] = run_globalsearchContRC(DataSystem, VarSystem, x0, lb, ub) 
-[fig, plot_num] = plotParam(fig, plot_num, best_params, fval, lambda_surface, CapacityGrid, ResistanceKGrid);
-
-%% Genetic 
-[best_params,fval,tElapsed] = run_geneticContRC(DataSystem, VarSystem, x0, lb, ub) 
-[fig, plot_num] = plotParam(fig, plot_num, best_params, fval, lambda_surface, CapacityGrid, ResistanceKGrid);
-
-%% PatternSearch
-[best_params, fval, tElapsed] = run_patternSearchContRC(DataSystem, VarSystem, x0, lb, ub) 
-[fig, plot_num] = plotParam(fig, plot_num, best_params, fval, lambda_surface, CapacityGrid, ResistanceKGrid);
-
-%% Simulated Annealing
-[best_params, fval, tElapsed] = run_simulatedAnnealingContRC(DataSystem, VarSystem, x0, lb, ub)
-[fig, plot_num] = plotParam(fig, plot_num, best_params, fval, lambda_surface, CapacityGrid, ResistanceKGrid);
-
-%% Surrogate 
-[best_params,fval,tElapsed] = run_surrogateContRC(DataSystem, VarSystem, lb, ub)
-[fig, plot_num] = plotParam(fig, plot_num, best_params, fval, lambda_surface, CapacityGrid, ResistanceKGrid);
+% %% Multistart
+% [best_params,fval,tElapsed] = run_multistartContRC(DataSystem, VarSystem, x0, lb, ub, numStarts) 
+% [fig, plot_num] = plotParam(fig, plot_num, best_params, fval, lambda_surface, CapacityGrid, ResistanceKGrid);
+% 
+% %% Globalsearch
+% [best_params,fval,tElapsed] = run_globalsearchContRC(DataSystem, VarSystem, x0, lb, ub) 
+% [fig, plot_num] = plotParam(fig, plot_num, best_params, fval, lambda_surface, CapacityGrid, ResistanceKGrid);
+% 
+% %% Genetic 
+% [best_params,fval,tElapsed] = run_geneticContRC(DataSystem, VarSystem, x0, lb, ub) 
+% [fig, plot_num] = plotParam(fig, plot_num, best_params, fval, lambda_surface, CapacityGrid, ResistanceKGrid);
+% 
+% %% PatternSearch
+% [best_params, fval, tElapsed] = run_patternSearchContRC(DataSystem, VarSystem, x0, lb, ub) 
+% [fig, plot_num] = plotParam(fig, plot_num, best_params, fval, lambda_surface, CapacityGrid, ResistanceKGrid);
+% 
+% %% Simulated Annealing
+% [best_params, fval, tElapsed] = run_simulatedAnnealingContRC(DataSystem, VarSystem, x0, lb, ub)
+% [fig, plot_num] = plotParam(fig, plot_num, best_params, fval, lambda_surface, CapacityGrid, ResistanceKGrid);
+% 
+% %% Surrogate 
+% [best_params,fval,tElapsed] = run_surrogateContRC(DataSystem, VarSystem, lb, ub)
+% [fig, plot_num] = plotParam(fig, plot_num, best_params, fval, lambda_surface, CapacityGrid, ResistanceKGrid);
  %%
 
 
