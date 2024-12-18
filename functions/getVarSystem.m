@@ -8,9 +8,9 @@ function [VarSystem] = getVarSystem()
     VarSystem.t   = 30;
 
     VarSystem.capacity    = 1e-6;
-    VarSystem.resistance_B= 10e3;
-    VarSystem.resistance_BE= 20e3;
-    VarSystem.resistance_E= 10e3;
+    VarSystem.resistance_B = 10e3;
+    VarSystem.resistance_BE = 20e3;
+    VarSystem.resistance_E = 10e3;
 
     VarSystem.goalfreq  = 1000;
 end

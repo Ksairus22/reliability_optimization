@@ -29,16 +29,15 @@ function params = calculateDirectCircuitParams(inputStruct)
 
     Pb = Ub^2 / Rb;
     Pbe = (Us - Ub)^2 / Rbe;
-    
+    Pe = Ue^2 / Re;
     
     Ik = I_Re; % Ток, который мы вычислили
     
     Ub = I_Rb * R2;
     Ue = Ub - Ube;
-    Ie = Ue / Re;
+    Ie = Ue / R3;
     Ik = Ie;
     Ib = Ik / beta;
-    Pe = Ue^2 / Re;
     % Создание выходной структуры
     outputStruct = struct('Ue', Ue, ...
                           'Re', Re, ...

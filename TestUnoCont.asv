@@ -1,4 +1,4 @@
-clc; clear; close all;
+% clc; clear; close all;
 
 %% Includes
 addpath("functions\");
@@ -27,8 +27,8 @@ FilenameSystem.Transistors = 'table_reliability_transistor.xlsx';
 %% строить поверхность долго
 % Задаем диапазоны значений для capacity и resistance_k
 capacity_range = linspace(1e-12, 1e-1, 70); % от 500 до 1500
-resistance_b_range = linspace(1e3, .5e6, 70); % от 100 до 300
-resistance_be_range = linspace(1e3, .5e6, 70); % от 100 до 300
+resistance_b_range = linspace(1e3, 1.1e6, 70); % от 100 до 300
+resistance_be_range = linspace(1e3, 1.1e6, 70); % от 100 до 300
 
 % Создаем сетку значений
 [ResistanceBEGrid, ResistanceBGrid] = meshgrid(resistance_be_range, resistance_b_range);
@@ -67,48 +67,48 @@ dt=datatip(sc);
 matrixString = strings(height(ResistanceBGrid), width(ResistanceBGrid));
 
 % Заполняем матрицу одинаковым элементом
-matrixString(:) = "TrueMinimum"; % замените "element" на желаемое 
+matrixString(:) = "element"; % замените "element" на желаемое 
 
 aa = dataTipTextRow('label',matrixString);
 sc.DataTipTemplate.DataTipRows(end+1) = aa;
 
 hold off
-xlabel('X: Resistance_{be} (Ω)');
-ylabel('Y: Resistance_{b} (Ω)');
-zlabel('Z: Lambda (Failure Rate)');
+xlabel('Resistance_{be} (Ω)');
+ylabel('Resistance_{b} (Ω)');
+zlabel('Lambda (Failure Rate)');
 title(' ');
 colorbar; % Добавляем цветовую панель для обозначения значений lambda
 %% Оптимизация 
 
 x0 = [1e3 1e3]; 
 lb = [1e3 1e3]; 
-ub = [.5e6 .5e6]; 
+ub = [1.1e6 1.1e6]; 
 numStarts = 200; 
 plot_num = [];
 fig = [];
-%% Multistart
-[best_params,fval,tElapsed] = run_multistartContRC(DataSystem, VarSystem, x0, lb, ub, numStarts) 
-[fig, plot_num] = plotParam(fig, plot_num, best_params, fval, lambda_surface, ResistanceBEGrid, ResistanceBGrid,row,col,"Multistart");
-
-%% Globalsearch
-[best_params,fval,tElapsed] = run_globalsearchContRC(DataSystem, VarSystem, x0, lb, ub) 
-[fig, plot_num] = plotParam(fig, plot_num, best_params, fval, lambda_surface, ResistanceBEGrid, ResistanceBGrid,row,col,"Globalsearch");
-
-%% Genetic 
-[best_params,fval,tElapsed] = run_geneticContRC(DataSystem, VarSystem, x0, lb, ub) 
-[fig, plot_num] = plotParam(fig, plot_num, best_params, fval, lambda_surface, ResistanceBEGrid, ResistanceBGrid,row,col,"Genetic");
-
-%% PatternSearch
-[best_params, fval, tElapsed] = run_patternSearchContRC(DataSystem, VarSystem, x0, lb, ub) 
-[fig, plot_num] = plotParam(fig, plot_num, best_params, fval, lambda_surface, ResistanceBEGrid, ResistanceBGrid,row,col,"PatternSearch");
-
-%% Simulated Annealing
-[best_params, fval, tElapsed] = run_simulatedAnnealingContRC(DataSystem, VarSystem, x0, lb, ub)
-[fig, plot_num] = plotParam(fig, plot_num, best_params, fval, lambda_surface, ResistanceBEGrid, ResistanceBGrid,row,col,"Simulated Annealing");
-
-%% Surrogate 
-[best_params,fval,tElapsed] = run_surrogateContRC(DataSystem, VarSystem, lb, ub)
-[fig, plot_num] = plotParam(fig, plot_num, best_params, fval, lambda_surface, ResistanceBEGrid, ResistanceBGrid,row,col,"Surrogate");
+% %% Multistart
+% [best_params,fval,tElapsed] = run_multistartContRC(DataSystem, VarSystem, x0, lb, ub, numStarts) 
+% [fig, plot_num] = plotParam(fig, plot_num, best_params, fval, lambda_surface, ResistanceBEGrid, ResistanceBGrid,row,col);
+% 
+% %% Globalsearch
+% [best_params,fval,tElapsed] = run_globalsearchContRC(DataSystem, VarSystem, x0, lb, ub) 
+% [fig, plot_num] = plotParam(fig, plot_num, best_params, fval, lambda_surface, ResistanceBEGrid, ResistanceBGrid,row,col);
+% 
+% %% Genetic 
+% [best_params,fval,tElapsed] = run_geneticContRC(DataSystem, VarSystem, x0, lb, ub) 
+% [fig, plot_num] = plotParam(fig, plot_num, best_params, fval, lambda_surface, ResistanceBEGrid, ResistanceBGrid,row,col);
+% 
+% %% PatternSearch
+% [best_params, fval, tElapsed] = run_patternSearchContRC(DataSystem, VarSystem, x0, lb, ub) 
+% [fig, plot_num] = plotParam(fig, plot_num, best_params, fval, lambda_surface, ResistanceBEGrid, ResistanceBGrid,row,col);
+% 
+% %% Simulated Annealing
+% [best_params, fval, tElapsed] = run_simulatedAnnealingContRC(DataSystem, VarSystem, x0, lb, ub)
+% [fig, plot_num] = plotParam(fig, plot_num, best_params, fval, lambda_surface, ResistanceBEGrid, ResistanceBGrid,row,col);
+% 
+% %% Surrogate 
+% [best_params,fval,tElapsed] = run_surrogateContRC(DataSystem, VarSystem, lb, ub)
+% [fig, plot_num] = plotParam(fig, plot_num, best_params, fval, lambda_surface, ResistanceBEGrid, ResistanceBGrid,row,col);
  %%
 
 
@@ -120,9 +120,9 @@ fig = [];
 
 surf(ResistanceBEGrid, ResistanceBGrid, lambda_surface.lambda_surface,'EdgeColor','none');
 
-xlabel('X: Resistance_{be} (Ω)');
-ylabel('Y: Resistance_{b} (Ω)');
-zlabel('Z: Lambda (Failure Rate)');
+xlabel('Resistance_{be} (Ω)');
+ylabel('Resistance_{b} (Ω)');
+zlabel('Lambda (Failure Rate)');
 title(' ');
 colorbar; % Добавляем цветовую панель для обозначения значений lambda
 
@@ -146,7 +146,7 @@ sc.DataTipTemplate.DataTipRows(end+1) = aa;
 
 
 % Заполняем матрицу одинаковым элементом
-matrixString(:) = "TrueMinimum"; % замените "element" на желаемое 
+matrixString(:) = "truemin"; % замените "element" на желаемое 
 
 aa = dataTipTextRow('label',matrixString);
 sc.DataTipTemplate.DataTipRows(end+1) = aa;
