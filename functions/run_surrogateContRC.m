@@ -1,10 +1,10 @@
-function [best_params,fval,tElapsed] = run_surrogateContRC(DataSystem, VarSystem, lb, ub) 
+function [best_params,fval,tElapsed] = run_surrogateContRC(DataSystem, VarSystem, lb, ub, numStarts) 
 % Оптимизация lambda
 sse_func = @(x) getFunctionSystemUnoCont(x, DataSystem, VarSystem);
 
 % Опции для surrogateopt
 opts = optimoptions(@surrogateopt, ... 
-                    'MaxFunctionEvaluations', 500,... 
+                    'MaxFunctionEvaluations', numStarts,... 
                     'PlotFcn', @surrogateoptplot); 
 
 % Установка начальной точки

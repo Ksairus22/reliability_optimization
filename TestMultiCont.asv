@@ -70,7 +70,6 @@ surf(ResistanceBGrid, ResistanceEGrid, rin_surface.rin_surface,'EdgeColor','none
 xlabel('X: Resistance_{b} (Ω)');
 ylabel('Y: Resistance_{e} (Ω)');
 zlabel('Z: R_{in} (Ω)');
-
 figure 
 shift=height(lambda_surface.lambda_surface);
 matr1_r=rin_surface.rin_surface;
@@ -82,15 +81,15 @@ for i=1:height(lambda_surface.lambda_surface)
     end
     pareto_y(i) = min(tmp2);
 end
-scatter(pareto_y,pareto_x,'black','<','filled','SizeData',40)
+scatter(pareto_x,pareto_y,'black','<','filled','SizeData',40)
 grid
-ylabel('Y: R_{in} (Ω)');
-xlabel('X: Lambda (Failure Rate)');
+xlabel('X: R_{in} (Ω)');
+ylabel('Y: Lambda (Failure Rate)');
 %% fminimax
-% [best_params,fval,tElapsed] = run_fminimaxContRC_multi(DataSystem, VarSystem, x0, lb, ub, numStarts) 
+[best_params,fval,tElapsed] = run_fminimaxContRC_multi(DataSystem, VarSystem, x0, lb, ub, numStarts) 
 
 %% fgoalattain
-% [best_params,fval,tElapsed] = run_fgoalattainContRC_multi(DataSystem,goal,weight, VarSystem, x0, lb, ub, numStarts) 
+[best_params,fval,tElapsed] = run_fgoalattainContRC_multi(DataSystem,goal,weight, VarSystem, x0, lb, ub, numStarts) 
 %% gamultiobj
 [best_params,fval,tElapsed] = run_gamultiobjContRC_multi(DataSystem, VarSystem, lb, ub, numStarts)
 

@@ -24,8 +24,8 @@ FilenameSystem.Transistors = 'table_reliability_transistor.xlsx';
 
 [VarSystem] = getVarSystem();
 %% optimization
-lb = [1 1]; 
-ub = [81 225]-1; 
+lb = [1 1e3]; 
+ub = [225-1 .5e6]; 
 x0 = [1 1];
 numVar = 2;
 plot_num = [];
@@ -33,29 +33,29 @@ fig = [];
 numStarts = 100; 
 %% строить поверхность долго
 % Задаем диапазоны значений для capacity и resistance_k
-resistance_range = lb(1):ub(1);
-transistor_range = lb(2):ub(2);
+resistance_range = linspace(lb(2),ub(2),100);
+transistor_range = lb(1):ub(1);
 
 % Создаем сетку значений
-[ResistanceGrid, TransitorGrid] = meshgrid(resistance_range,transistor_range);
+[TransitorGrid, ResistanceGrid] = meshgrid(transistor_range,resistance_range);
 
 % % Предварительно создаем матрицу для хранения результатов
-% lambda_surface = zeros(size(ResistanceGrid));
+% lambda_surface = zeros(size(TransitorGrid));
 % 
 % % Вычисляем lambda для каждой комбинации capacity и resistance_k
-% for i = 1:size(ResistanceGrid, 1)
-%     for j = 1:size(ResistanceGrid, 2)
-%         [VarSystem] = getVarSystemVariable(VarSystem.IteratorCapacitor, VarSystem.IteratorDiod, ResistanceGrid(i,j), ResistanceGrid(i,j),...
-%     ResistanceGrid(i,j), TransitorGrid(i,j), VarSystem.t, VarSystem.capacity,...
-%     VarSystem.resistance_B,VarSystem.resistance_BE, VarSystem.resistance_E, VarSystem.goalfreq)
+% for i = 1:size(TransitorGrid, 1)
+%     for j = 1:size(TransitorGrid, 2)
+%         [VarSystem] = getVarSystemVariable(VarSystem.IteratorCapacitor, VarSystem.IteratorDiod, VarSystem.IteratorResistor_B, VarSystem.IteratorResistor_BE,...
+%     VarSystem.IteratorResistor_E, TransitorGrid(i,j), VarSystem.t, VarSystem.capacity,...
+%     ResistanceGrid(i,j),ResistanceGrid(i,j), VarSystem.resistance_E, VarSystem.goalfreq)
 %         lambda_surface(i, j) = getReliabilitySystemFromData(DataSystem, VarSystem);
 %     end
 % end
-% save("lambda2","lambda_surface")
-lambda_surface = load("lambda2","lambda_surface");
+% save("lambda3","lambda_surface")
+lambda_surface = load("lambda3","lambda_surface");
 % Построение 3D поверхности
 figure;
-surf(ResistanceGrid, TransitorGrid, lambda_surface.lambda_surface,'EdgeColor','none');
+surf(TransitorGrid, ResistanceGrid, lambda_surface.lambda_surface,'EdgeColor','none');
 % scatter3(ResistanceGrid, TransitorGrid, lambda_surface.lambda_surface,'black','filled');
 %%
 % Находим минимальное значение в матрице и его индекс
@@ -64,12 +64,12 @@ surf(ResistanceGrid, TransitorGrid, lambda_surface.lambda_surface,'EdgeColor','n
 % Преобразуем линейный индекс в двумерные индексы (строка и столбец)
 [row, col] = ind2sub(size(lambda_surface.lambda_surface), linearIndex)
 hold on
-sc = scatter3(ResistanceGrid(row,col),TransitorGrid(row,col),lambda_surface.lambda_surface(row,col),'red','square','filled','SizeData',200); 
+sc = scatter3(TransitorGrid(row,col),ResistanceGrid(row,col),lambda_surface.lambda_surface(row,col),'red','square','filled','SizeData',200); 
 dt=datatip(sc);
 % Задаем размер матрицы
 
 % Создаем матрицу размером 70x70 с одинаковыми строками
-matrixString = strings(height(ResistanceGrid), width(TransitorGrid));
+matrixString = strings(height(TransitorGrid), width(ResistanceGrid));
 
 % Заполняем матрицу одинаковым элементом
 matrixString(:) = "TrueMinimum"; % замените "element" на желаемое 
@@ -78,16 +78,18 @@ aa = dataTipTextRow('label',matrixString);
 sc.DataTipTemplate.DataTipRows(end+1) = aa;
 
 hold off
-xlabel('X: Resistor_{index}');
+xlabel('X: Resistance (Ω)');
 ylabel('Y: Transistor_{index}');
 zlabel('Z: Lambda (Failure Rate)');
 title(' ');
+colorbar
+% colormap('copper')
 %% Genetic 
-[best_params,fval,tElapsed] = run_geneticDiscr(DataSystem, VarSystem, x0, lb, ub, numVar,numStarts) 
-[fig, plot_num] = plotParam(fig, plot_num, best_params, fval, lambda_surface, ResistanceGrid, TransitorGrid,row,col,"Genetic",tElapsed);
+[best_params,fval,tElapsed] = run_geneticMixed(DataSystem, VarSystem, x0, lb, ub, numVar,numStarts) 
+[fig, plot_num] = plotParam(fig, plot_num, best_params, fval, lambda_surface, TransitorGrid, ResistanceGrid,row,col,"Genetic",tElapsed);
 %% Surrogate 
-[best_params, fval, tElapsed] = run_surrogateoptDiscr(DataSystem,VarSystem, lb, ub, numVar,numStarts)  
-[fig, plot_num] = plotParam(fig, plot_num, best_params, fval, lambda_surface, ResistanceGrid, TransitorGrid,row,col,"Surrogate",tElapsed);
+[best_params, fval, tElapsed] = run_surrogateoptMixed(DataSystem,VarSystem, lb, ub, numVar,numStarts)  
+[fig, plot_num] = plotParam(fig, plot_num, best_params, fval, lambda_surface, TransitorGrid, ResistanceGrid,row,col,"Surrogate",tElapsed);
 
  function [fig, num] = plotParam(fig, num, best_params, fval, lambda_surface, ResistanceBEGrid, ResistanceBGrid,row,col,name,tElapsed)
     if(isempty(fig) || isempty(num))
@@ -97,7 +99,7 @@ title(' ');
 
 surf(ResistanceBEGrid, ResistanceBGrid, lambda_surface.lambda_surface,'EdgeColor','none');
 
-xlabel('X: Resistor_{index}');
+xlabel('X: Resistance (Ω)');
 ylabel('Y: Transistor_{index}');
 zlabel('Z: Lambda (Failure Rate)');
 title(' ');

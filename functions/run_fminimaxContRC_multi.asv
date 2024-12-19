@@ -6,7 +6,7 @@ nlcon = @nonlcon;
 % Опции для fminimax с функциями отрисовки
 options = optimoptions('fminimax','Display','iter', ...
                        'PlotFcn', {@optimplotfval, @optimplotfunccount, @optimplotx});
-
+options.StepTolerance=options.StepTolerance
 % options.MaxIterations=numStarts;
 tStart = tic;
 % Использование fminimax

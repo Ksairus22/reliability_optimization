@@ -1,11 +1,12 @@
 function F = getFunctionSystemMultiCont(x, DataSystem, VarSystem)
 
-    VarSystem.capacity = x(1);
-    VarSystem.resistance_k = x(2);
+    VarSystem.resistance_BE = x(1);
+    VarSystem.resistance_B = x(1);
+    VarSystem.resistance_E = x(2);
+    % x;
+    
+    [f1,f2] = getReliabilityResInSystemFromData(DataSystem, VarSystem);  
 
-    f1 = (VarSystem.goalfreq - 1 ./ (log(2) * (2 * x(1) .* x(2)))).^2;
-    f2 = getReliabilitySystemFromData(DataSystem, VarSystem);  
-
-    F = [f1, f2];  
+    F = [f1, -f2];  
 
 end

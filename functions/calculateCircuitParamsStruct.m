@@ -16,7 +16,7 @@ inputStruct = struct(...
     'Rbe', VarSystem.resistance_BE, ...     % Значение резистора Rbe
     'Rb', VarSystem.resistance_B, ...      % Значение резистора Rb
     'beta', DataSystem.Transistor.h21(VarSystem.IteratorTransistor), ...    % Бета (усиление тока биполярного транзистора)
-    'f', 50e3, ...      % Частота в герцах
+    'f', 20, ...      % Частота в герцах
     't', VarSystem.t, ...      % Временной интервал
     'Us', 12, ...       % Напряжение источника
     'Ube', 0.7 ...      % Напряжение на переходе базы-эмиттера

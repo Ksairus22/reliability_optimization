@@ -26,7 +26,6 @@ FilenameSystem.Transistors = 'table_reliability_transistor.xlsx';
 % [lambda] = getReliabilitySystemFromData(DataSystem, VarSystem)
 %% строить поверхность долго
 % Задаем диапазоны значений для capacity и resistance_k
-capacity_range = linspace(1e-12, 1e-1, 70); % от 500 до 1500
 resistance_b_range = linspace(1e3, .5e6, 70); % от 100 до 300
 resistance_be_range = linspace(1e3, .5e6, 70); % от 100 до 300
 
@@ -80,39 +79,39 @@ title(' ');
 colorbar; % Добавляем цветовую панель для обозначения значений lambda
 %% Оптимизация 
 
-x0 = [1e3 1e3]; 
+x0 = [3e5 3e5]; 
 lb = [1e3 1e3]; 
 ub = [.5e6 .5e6]; 
-numStarts = 200; 
+numStarts = 100; 
 plot_num = [];
 fig = [];
 %% Multistart
 [best_params,fval,tElapsed] = run_multistartContRC(DataSystem, VarSystem, x0, lb, ub, numStarts) 
-[fig, plot_num] = plotParam(fig, plot_num, best_params, fval, lambda_surface, ResistanceBEGrid, ResistanceBGrid,row,col,"Multistart");
+[fig, plot_num] = plotParam(fig, plot_num, best_params, fval, lambda_surface, ResistanceBEGrid, ResistanceBGrid,row,col,"Multistart",tElapsed);
 
 %% Globalsearch
-[best_params,fval,tElapsed] = run_globalsearchContRC(DataSystem, VarSystem, x0, lb, ub) 
-[fig, plot_num] = plotParam(fig, plot_num, best_params, fval, lambda_surface, ResistanceBEGrid, ResistanceBGrid,row,col,"Globalsearch");
+[best_params,fval,tElapsed] = run_globalsearchContRC(DataSystem, VarSystem, x0, lb, ub, numStarts) 
+[fig, plot_num] = plotParam(fig, plot_num, best_params, fval, lambda_surface, ResistanceBEGrid, ResistanceBGrid,row,col,"Globalsearch",tElapsed);
 
 %% Genetic 
-[best_params,fval,tElapsed] = run_geneticContRC(DataSystem, VarSystem, x0, lb, ub) 
-[fig, plot_num] = plotParam(fig, plot_num, best_params, fval, lambda_surface, ResistanceBEGrid, ResistanceBGrid,row,col,"Genetic");
+[best_params,fval,tElapsed] = run_geneticContRC(DataSystem, VarSystem, x0, lb, ub, numStarts) 
+[fig, plot_num] = plotParam(fig, plot_num, best_params, fval, lambda_surface, ResistanceBEGrid, ResistanceBGrid,row,col,"Genetic",tElapsed);
 
 %% PatternSearch
-[best_params, fval, tElapsed] = run_patternSearchContRC(DataSystem, VarSystem, x0, lb, ub) 
-[fig, plot_num] = plotParam(fig, plot_num, best_params, fval, lambda_surface, ResistanceBEGrid, ResistanceBGrid,row,col,"PatternSearch");
+[best_params, fval, tElapsed] = run_patternSearchContRC(DataSystem, VarSystem, x0, lb, ub, numStarts) 
+[fig, plot_num] = plotParam(fig, plot_num, best_params, fval, lambda_surface, ResistanceBEGrid, ResistanceBGrid,row,col,"PatternSearch",tElapsed);
 
 %% Simulated Annealing
-[best_params, fval, tElapsed] = run_simulatedAnnealingContRC(DataSystem, VarSystem, x0, lb, ub)
-[fig, plot_num] = plotParam(fig, plot_num, best_params, fval, lambda_surface, ResistanceBEGrid, ResistanceBGrid,row,col,"Simulated Annealing");
+[best_params, fval, tElapsed] = run_simulatedAnnealingContRC(DataSystem, VarSystem, x0, lb, ub, numStarts)
+[fig, plot_num] = plotParam(fig, plot_num, best_params, fval, lambda_surface, ResistanceBEGrid, ResistanceBGrid,row,col,"Simulated Annealing",tElapsed);
 
 %% Surrogate 
-[best_params,fval,tElapsed] = run_surrogateContRC(DataSystem, VarSystem, lb, ub)
-[fig, plot_num] = plotParam(fig, plot_num, best_params, fval, lambda_surface, ResistanceBEGrid, ResistanceBGrid,row,col,"Surrogate");
+[best_params,fval,tElapsed] = run_surrogateContRC(DataSystem, VarSystem, lb, ub, numStarts)
+[fig, plot_num] = plotParam(fig, plot_num, best_params, fval, lambda_surface, ResistanceBEGrid, ResistanceBGrid,row,col,"Surrogate",tElapsed);
  %%
 
 
- function [fig, num] = plotParam(fig, num, best_params, fval, lambda_surface, ResistanceBEGrid, ResistanceBGrid,row,col,name)
+ function [fig, num] = plotParam(fig, num, best_params, fval, lambda_surface, ResistanceBEGrid, ResistanceBGrid,row,col,name,tElapsed)
     if(isempty(fig) || isempty(num))
         num = 1;
     end
@@ -153,6 +152,56 @@ sc.DataTipTemplate.DataTipRows(end+1) = aa;
     
     num = num + 1;
     hold off
+
+
+
+
+
+
+
+
+
+
+
+
+
+    % Specify the Excel file name
+filename = 'your_excel_file.xlsx'; % Replace 'your_excel_file.xlsx' with your actual file name
+
+% Read the existing Excel file into a table
+try
+    existingData = readtable(filename);
+catch
+    existingData = [];
+end
+
+% Создайте структуру для нового значения
+mstr = struct( ...
+   'name', name, ...
+   'best_params_1', best_params(1), ...
+   'best_params_2', best_params(2), ...
+   'fval', fval, ...
+   'absError', lambda_surface.lambda_surface(row,col)-fval,...
+   'tElapsed', tElapsed ...
+);
+
+% Преобразуйте структуру в таблицу
+newTable = struct2table(mstr);
+
+% Теперь попробуйте объединить таблицы
+combinedData = [existingData; newTable];
+
+
+
+% Write the combined data back to the Excel file
+try
+    writetable(combinedData, filename, 'Sheet',1); % Writes to the first sheet. Change 'Sheet',1 to specify other sheets if needed.
+catch
+    error('Error writing the table to Excel file.  Make sure the file is not open in another application.');
+end
+
+disp('Table appended successfully!');
+
 end
 
 

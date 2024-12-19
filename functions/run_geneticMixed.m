@@ -1,6 +1,6 @@
-function [best_params,fval,tElapsed] = run_geneticDiscr(DataSystem, VarSystem, x0, lb, ub, numVar, numStarts) 
+function [best_params,fval,tElapsed] = run_geneticMixed(DataSystem, VarSystem, x0, lb, ub, numVar, numStarts) 
 % Оптимизация lambda
-sse_func  = @(x) getFunctionSystemUnoDiscr(x, DataSystem, VarSystem);
+sse_func  = @(x) getFunctionSystemUnoMixed(x, DataSystem, VarSystem);
 
     opts = optimoptions(@ga, ...
                         'PopulationSize', 20, ...
@@ -13,7 +13,7 @@ sse_func  = @(x) getFunctionSystemUnoDiscr(x, DataSystem, VarSystem);
 tStart = tic;
 
 [best_params, fval, exitflag] = ga(sse_func, numVar, [], [], [], [], ...
-    lb, ub, [], 1:numVar, opts);
+    lb, ub, [], 1, opts);
 
 best_params=best_params+1;
 

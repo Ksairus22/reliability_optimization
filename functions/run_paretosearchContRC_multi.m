@@ -1,4 +1,4 @@
-function [best_params,fval,tElapsed] = run_paretosearchContRC_multi(DataSystem, VarSystem, lb, ub) 
+function [best_params,fval,tElapsed] = run_paretosearchContRC_multi(DataSystem, VarSystem, lb, ub, numStarts)
 
 fun = @(x) getFunctionSystemMultiCont(x, DataSystem, VarSystem);
 
