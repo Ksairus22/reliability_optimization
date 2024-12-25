@@ -56,7 +56,7 @@ surf(ResistanceBEGrid, ResistanceBGrid, lambda_surface.lambda_surface,'EdgeColor
 % Преобразуем линейный индекс в двумерные индексы (строка и столбец)
 [row, col] = ind2sub(size(lambda_surface.lambda_surface), linearIndex);
 hold on
-sc = scatter3(ResistanceBEGrid(row,col),ResistanceBGrid(row,col),lambda_surface.lambda_surface(row,col),'red','square','filled','SizeData',400); 
+sc = scatter3(ResistanceBEGrid(row,col),ResistanceBGrid(row,col),lambda_surface.lambda_surface(row,col),'red','square','filled','SizeData',200); 
 dt=datatip(sc);
 % Задаем размер матрицы
 
@@ -80,27 +80,27 @@ if(opt_mod == 1)
     %% Direct opt
     %% Multistart
     [best_params,fval,tElapsed] = run_multistartContRC(DataSystem, VarSystem, x0, lb, ub, numStarts) 
-    [fig, plot_num] = plotParam(fig, plot_num, x0, VarSystem, DataSystem, best_params, fval, lambda_surface, ResistanceBEGrid, ResistanceBGrid,row,col,"Multistart",tElapsed);
+    [fig, plot_num] = plotParam(fig, plot_num, x0, best_params, fval, lambda_surface, ResistanceBEGrid, ResistanceBGrid,row,col,"Multistart",tElapsed);
     
     %% Globalsearch
     [best_params,fval,tElapsed] = run_globalsearchContRC(DataSystem, VarSystem, x0, lb, ub, numStarts) 
-    [fig, plot_num] = plotParam(fig, plot_num, x0, VarSystem, DataSystem, best_params, fval, lambda_surface, ResistanceBEGrid, ResistanceBGrid,row,col,"Globalsearch",tElapsed);
+    [fig, plot_num] = plotParam(fig, plot_num, x0, best_params, fval, lambda_surface, ResistanceBEGrid, ResistanceBGrid,row,col,"Globalsearch",tElapsed);
     
     %% Genetic 
     [best_params,fval,tElapsed] = run_geneticContRC(DataSystem, VarSystem, x0, lb, ub, numStarts) 
-    [fig, plot_num] = plotParam(fig, plot_num, x0, VarSystem, DataSystem, best_params, fval, lambda_surface, ResistanceBEGrid, ResistanceBGrid,row,col,"Genetic",tElapsed);
+    [fig, plot_num] = plotParam(fig, plot_num, x0, best_params, fval, lambda_surface, ResistanceBEGrid, ResistanceBGrid,row,col,"Genetic",tElapsed);
     
     %% PatternSearch
     [best_params, fval, tElapsed] = run_patternSearchContRC(DataSystem, VarSystem, x0, lb, ub, numStarts) 
-    [fig, plot_num] = plotParam(fig, plot_num, x0, VarSystem, DataSystem, best_params, fval, lambda_surface, ResistanceBEGrid, ResistanceBGrid,row,col,"PatternSearch",tElapsed);
+    [fig, plot_num] = plotParam(fig, plot_num, x0, best_params, fval, lambda_surface, ResistanceBEGrid, ResistanceBGrid,row,col,"PatternSearch",tElapsed);
     
     %% Simulated Annealing
     [best_params, fval, tElapsed] = run_simulatedAnnealingContRC(DataSystem, VarSystem, x0, lb, ub, numStarts)
-    [fig, plot_num] = plotParam(fig, plot_num, x0, VarSystem, DataSystem, best_params, fval, lambda_surface, ResistanceBEGrid, ResistanceBGrid,row,col,"Simulated Annealing",tElapsed);
+    [fig, plot_num] = plotParam(fig, plot_num, x0, best_params, fval, lambda_surface, ResistanceBEGrid, ResistanceBGrid,row,col,"Simulated Annealing",tElapsed);
     
     %% Surrogate 
     [best_params,fval,tElapsed] = run_surrogateContRC(DataSystem, VarSystem, lb, ub, numStarts)
-    [fig, plot_num] = plotParam(fig, plot_num, x0, VarSystem, DataSystem, best_params, fval, lambda_surface, ResistanceBEGrid, ResistanceBGrid,row,col,"Surrogate",tElapsed);
+    [fig, plot_num] = plotParam(fig, plot_num, x0, best_params, fval, lambda_surface, ResistanceBEGrid, ResistanceBGrid,row,col,"Surrogate",tElapsed);
 elseif(opt_mod == 2)
     %% Statistic opt
     numOpts = 10;
@@ -164,9 +164,9 @@ end
 
 
 
-function [fig, plot_num] = plotParam(fig, plot_num, x0, VarSystem, DataSystem, best_params, fval, lambda_surface, ResistanceBEGrid, ResistanceBGrid,row,col,name,tElapsed)
-    if(isempty(fig) || isempty(plot_num))
-        plot_num = 1;
+function [fig, num] = plotParam(fig, num, x0, best_params, fval, lambda_surface, ResistanceBEGrid, ResistanceBGrid,row,col,name,tElapsed)
+    if(isempty(fig) || isempty(num))
+        num = 1;
     end
     fig = [fig figure()];
 
@@ -179,7 +179,7 @@ title(' ');
 colorbar; % Добавляем цветовую панель для обозначения значений lambda
 
     hold on 
-    sc = scatter3(best_params(1),best_params(2),fval,'red','square','filled','SizeData',400); 
+    sc = scatter3(best_params(1),best_params(2),fval,'red','square','filled','SizeData',200); 
     dt=datatip(sc);
     % min(min(lambda_surface.lambda_surface)
 
@@ -193,21 +193,19 @@ aa = dataTipTextRow('label',matrixString);
 sc.DataTipTemplate.DataTipRows(end+1) = aa;
 
     
-    sc = scatter3(ResistanceBEGrid(row,col),ResistanceBGrid(row,col),lambda_surface.lambda_surface(row,col),'green','square','filled','SizeData',400); 
+    sc = scatter3(ResistanceBEGrid(row,col),ResistanceBGrid(row,col),lambda_surface.lambda_surface(row,col),'green','square','filled','SizeData',200); 
     dt=datatip(sc);
 % % % 
 % % % 
 % Заполняем матрицу одинаковым элементом
-matrixString1 = strings(height(ResistanceBGrid), width(ResistanceBGrid));
-matrixString1(:) = 'x_0'; % замените "element" на желаемое 
+matrixString(:) = 'x_0'; % замените "element" на желаемое 
 
-sc1 = scatter3(x0(1),x0(2),getFunctionSystemUnoCont(x0, DataSystem, VarSystem),'magenta','square','filled','SizeData',400); 
-bb = dataTipTextRow('label',matrixString1);
-sc1.DataTipTemplate.DataTipRows(end+1) = bb;
+bb = dataTipTextRow('label',matrixString);
+sc.DataTipTemplate.DataTipRows(end+1) = aa;
 
     
-
-    dt1=datatip(sc1);
+    sc = scatter3(x0(1),x0(2),getFunctionSystemUnoCont(x, DataSystem, VarSystem);,'magenta','square','filled','SizeData',200); 
+    dt=datatip(sc);
 % % % 
 % % % 
 % Заполняем матрицу одинаковым элементом
@@ -216,7 +214,7 @@ matrixString(:) = "TrueMinimum"; % замените "element" на желаем�
 aa = dataTipTextRow('label',matrixString);
 sc.DataTipTemplate.DataTipRows(end+1) = aa;
     
-    plot_num = plot_num + 1;
+    num = num + 1;
     hold off
 
 
@@ -254,7 +252,7 @@ combinedData = [existingData; newTable];
 % traektory
 hold on
 global drawing;
-plot3(drawing.x(:,1), drawing.x(:,2), drawing.f(:,1),'Color','k','Marker','.','MarkerSize',20);
+plot3(drawing.x(:,1), drawing.x(:,2), drawing.f(:,1),'Color','r','Marker','.','MarkerSize',5);
 hold off
 % Write the combined data back to the Excel file
 try
@@ -264,12 +262,7 @@ catch
 end
 
 disp('Table appended successfully!');
-clear_drawing();
+
 end
 
-function clear_drawing()
-global drawing;
-drawing.f = []; % Инициализация массива f
-drawing.x = []; % Инициализация массива x
-end
 

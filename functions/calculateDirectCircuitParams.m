@@ -7,7 +7,9 @@ function params = calculateDirectCircuitParams(inputStruct)
     f = inputStruct.f;
     Us = inputStruct.Us;
     Ube = inputStruct.Ube;
-
+    h11 = inputStruct.h11;
+    % h22 = 1/inputStruct.h22;
+    h22 = inputStruct.h22;
     % Непосредственные вычисления
     % Эти уравнения вычисляются с помощью полной параллельной цепи
     % Определим r1 и r2 так, чтобы не использовать символические переменные
@@ -16,9 +18,25 @@ function params = calculateDirectCircuitParams(inputStruct)
     R1 = Rb; % заменяем r1
     R2 = Rbe; % заменяем r2
 
-    I_total = Us / (R1 + R2); % Ток в цепи исходя из закона Ома
-    I_Rb = I_total; % Ток через Rb
-    I_Re = -(7 * R1 - 113 * R2) / (10 * Re * (R1 + R2)); % Предполагаемое вычисление тока через Re
+    % I_total = Us / (R1 + R2); % Ток в цепи исходя из закона Ома
+    % I_Rb = I_total; % Ток через Rb
+    % I_Re = -(7 * R1 - 113 * R2) / (10 * Re * (R1 + R2)); % Предполагаемое вычисление тока через Re
+    
+
+    % syms beta Ube Rb Rbe Re h11 h22 Us 
+
+    I_Rb = (Rbe*h22*Us - Rbe*h22*Ube - Rbe*Re*Ube + Re*h11*Us + Re*h22*Us + h11*h22*Us - Re*h22*Us*beta)/...
+        (Rb*Rbe*Re + Rb*Rbe*h22 + Rb*Re*h11 + Rb*Re*h22 + Rbe*Re*h11 + Rb*h11*h22 + Rbe*Re*h22 + Rbe*h11*h22 - Rb*Re*h22*beta - Rbe*Re*h22*beta);
+    
+    I_Rbe = (Rb*Re*Ube + Rb*h22*Ube + Rb*Re*Us + Re*h11*Us + Re*h22*Us + h11*h22*Us - Re*h22*Us*beta)/...
+        (Rb*Rbe*Re + Rb*Rbe*h22 + Rb*Re*h11 + Rb*Re*h22 + Rbe*Re*h11 + Rb*h11*h22 + Rbe*Re*h22 + Rbe*h11*h22 - Rb*Re*h22*beta - Rbe*Re*h22*beta);
+
+    I_Re = (Rb*Rbe*Us - Rbe*h22*Ube - Rb*h22*Ube + Rb*h11*Us + Rbe*h11*Us + Rbe*h22*Us + Rb*h22*Ube*beta + Rbe*h22*Ube*beta - Rbe*h22*Us*beta)/...
+        (Rb*Rbe*Re + Rb*Rbe*h22 + Rb*Re*h11 + Rb*Re*h22 + Rbe*Re*h11 + Rb*h11*h22 + Rbe*Re*h22 + Rbe*h11*h22 - Rb*Re*h22*beta - Rbe*Re*h22*beta);
+
+    I_b = -(Rb*Re*Ube + Rbe*Re*Ube + Rb*h22*Ube + Rbe*h22*Ube + Rb*Re*Us - Rbe*h22*Us)/...
+        (Rb*Rbe*Re + Rb*Rbe*h22 + Rb*Re*h11 + Rb*Re*h22 + Rbe*Re*h11 + Rb*h11*h22 + Rbe*Re*h22 + Rbe*h11*h22 - Rb*Re*h22*beta - Rbe*Re*h22*beta);
+
 
     % Вычисляем напряжения и мощности
     Ub = I_Rb * Rb;
@@ -30,14 +48,13 @@ function params = calculateDirectCircuitParams(inputStruct)
     Pb = Ub^2 / Rb;
     Pbe = (Us - Ub)^2 / Rbe;
     
+
     
-    Ik = I_Re; % Ток, который мы вычислили
-    
-    Ub = I_Rb * R2;
+    Ub = I_Rbe * Rbe;
     Ue = Ub - Ube;
-    Ie = Ue / Re;
-    Ik = Ie;
-    Ib = Ik / beta;
+    Ie = I_Re;
+    Ib = I_b;
+    Ik = Ie+Ib;
     Pe = Ue^2 / Re;
     % Создание выходной структуры
     outputStruct = struct('Ue', Ue, ...
@@ -49,7 +66,11 @@ function params = calculateDirectCircuitParams(inputStruct)
                           'C1', C1, ...
                           'Pb', Pb, ...
                           'Pbe', Pbe, ...
-                          'Pe', Pe);
+                          'Pe', Pe, ...
+                          'Ib', Ib, ...
+                          'Ie', Ie, ...
+                          'Ik', Ik ...
+                          );
     
     % Создание подструктур
     Rb_struct = struct('U', Ub, 'P', Pb, 'R', Rb);

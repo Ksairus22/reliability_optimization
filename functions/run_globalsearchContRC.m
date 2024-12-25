@@ -6,8 +6,9 @@ sse_func = @(x) getFunctionSystemUnoCont(x, DataSystem, VarSystem);
 % Настройка объекта MultiStart для оптимизации
 gs = GlobalSearch;
 gs.PlotFcn=@gsplotbestf;
+gs.MaxTime=15;
 opts = optimoptions(@fmincon);
-opts.MaxIterations=numStarts;
+
 % opts.PlotFcn='';
 % Создание оптимизационной проблемы
 problem = createOptimProblem('fmincon', ...
