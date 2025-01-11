@@ -25,6 +25,7 @@ inputStruct = struct(...
 );
 
 % Вызов функции
-electric_parameters = calculateDirectCircuitParams(inputStruct);
+% electric_parameters = calculateDirectCircuitParams(inputStruct);
+electric_parameters = calculateDirectCircuitParamsUPD(inputStruct);
 
 end

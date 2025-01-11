@@ -32,7 +32,7 @@ numStarts = 100;
 plot_num = [];
 fig = [];
 plot_dens = 70;
-opt_mod = 2;
+opt_mod = 1;
 
 %% строить поверхность долго
 % Задаем диапазоны значений
@@ -43,7 +43,7 @@ resistance_be_range = linspace(lb(2), ub(2), plot_dens);
 [ResistanceBEGrid, ResistanceBGrid] = meshgrid(resistance_be_range, resistance_b_range);
 
 % Расчёт оптимизируемой функции
-% [output] = putUnoContTable(resistance_b_range,resistance_be_range);
+[output] = putUnoContTable(resistance_b_range,resistance_be_range,DataSystem, VarSystem);
 
 lambda_surface = load("lambda1","lambda_surface");
 % Построение 3D поверхности
@@ -75,7 +75,7 @@ ylabel('Y: Resistance_{b} (Ω)');
 zlabel('Z: Lambda (Failure Rate)');
 title(' ');
 colorbar; % Добавляем цветовую панель для обозначения значений lambda
-
+error()
 if(opt_mod == 1)
     %% Direct opt
     %% Multistart
