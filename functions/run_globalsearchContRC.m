@@ -6,10 +6,12 @@ sse_func = @(x) getFunctionSystemUnoCont(x, DataSystem, VarSystem);
 % Настройка объекта MultiStart для оптимизации
 gs = GlobalSearch;
 gs.PlotFcn=@gsplotbestf;
-gs.MaxTime=15;
+% gs.MaxTime=15;
+gs.NumStageOnePoints = numStarts;
+gs.NumTrialPoints = numStarts*numStarts;
 opts = optimoptions(@fmincon);
+opts.MaxIterations=numStarts;
 
-% opts.PlotFcn='';
 % Создание оптимизационной проблемы
 problem = createOptimProblem('fmincon', ...
     'x0', x0, ... % Начальные значения A и lambda
