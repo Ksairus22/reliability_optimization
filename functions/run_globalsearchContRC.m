@@ -7,8 +7,8 @@ sse_func = @(x) getFunctionSystemUnoCont(x, DataSystem, VarSystem);
 gs = GlobalSearch;
 gs.PlotFcn=@gsplotbestf;
 % gs.MaxTime=15;
-gs.NumStageOnePoints = numStarts;
-gs.NumTrialPoints = numStarts*numStarts;
+gs.NumStageOnePoints = 1;
+gs.NumTrialPoints = numStarts;
 opts = optimoptions(@fmincon);
 opts.MaxIterations=numStarts;
 

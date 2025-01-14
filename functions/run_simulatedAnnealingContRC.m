@@ -4,7 +4,8 @@ function [best_params, fval, tElapsed] = run_simulatedAnnealingContRC(DataSystem
 
     opts = optimoptions(@simulannealbnd, ...
                         'Display', 'iter', ...  % Отображение прогресса
-                        'MaxIter', numStarts, ... % Максимальное количество итераций
+                        'MaxIterations', numStarts, ... % Максимальное количество итераций
+                        'InitialTemperature', ub(1),...
                         'FunctionTolerance', 1e-8, ... % Допуск по функции
                         'TemperatureFcn', @temperatureexp,... % Функция температуры
                         'PlotFcn', @saplotbestf); 

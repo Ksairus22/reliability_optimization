@@ -33,6 +33,7 @@ plot_num = [];
 fig = [];
 plot_dens = 100;
 opt_mod = 2;
+write_mod = 1;
 
 %% строить поверхность долго
 % Задаем диапазоны значений
@@ -43,7 +44,9 @@ resistance_be_range = linspace(lb(2), ub(2), plot_dens);
 [ResistanceBEGrid, ResistanceBGrid] = meshgrid(resistance_be_range, resistance_b_range);
 
 % Расчёт оптимизируемой функции
-% [output] = putUnoContTable(resistance_b_range,resistance_be_range,DataSystem, VarSystem);
+if(write_mod)
+    [output] = putUnoContTable(resistance_b_range,resistance_be_range,DataSystem, VarSystem);
+end
 
 lambda_surface = load("lambda1","lambda_surface");
 % Построение 3D поверхности
@@ -78,34 +81,34 @@ colorbar; % Добавляем цветовую панель для обозна
 
 if(opt_mod == 1)
     %% Direct opt
-    %% Multistart
-    [best_params,fval,tElapsed] = run_multistartContRC(DataSystem, VarSystem, x0, lb, ub, numStarts) 
-    [fig, plot_num] = plotParam(fig, plot_num, x0, VarSystem, DataSystem, best_params, fval, lambda_surface, ResistanceBEGrid, ResistanceBGrid,row,col,"Multistart",tElapsed);
-    
-    %% Globalsearch
-    [best_params,fval,tElapsed] = run_globalsearchContRC(DataSystem, VarSystem, x0, lb, ub, numStarts) 
-    [fig, plot_num] = plotParam(fig, plot_num, x0, VarSystem, DataSystem, best_params, fval, lambda_surface, ResistanceBEGrid, ResistanceBGrid,row,col,"Globalsearch",tElapsed);
-    
-    %% Genetic 
-    [best_params,fval,tElapsed] = run_geneticContRC(DataSystem, VarSystem, x0, lb, ub, numStarts) 
-    [fig, plot_num] = plotParam(fig, plot_num, x0, VarSystem, DataSystem, best_params, fval, lambda_surface, ResistanceBEGrid, ResistanceBGrid,row,col,"Genetic",tElapsed);
-    
-    %% PatternSearch
-    [best_params, fval, tElapsed] = run_patternSearchContRC(DataSystem, VarSystem, x0, lb, ub, numStarts) 
-    [fig, plot_num] = plotParam(fig, plot_num, x0, VarSystem, DataSystem, best_params, fval, lambda_surface, ResistanceBEGrid, ResistanceBGrid,row,col,"PatternSearch",tElapsed);
-    
-    %% Simulated Annealing
-    [best_params, fval, tElapsed] = run_simulatedAnnealingContRC(DataSystem, VarSystem, x0, lb, ub, numStarts)
-    [fig, plot_num] = plotParam(fig, plot_num, x0, VarSystem, DataSystem, best_params, fval, lambda_surface, ResistanceBEGrid, ResistanceBGrid,row,col,"Simulated Annealing",tElapsed);
-    
-    %% Surrogate 
-    [best_params,fval,tElapsed] = run_surrogateContRC(DataSystem, VarSystem, lb, ub, numStarts)
-    [fig, plot_num] = plotParam(fig, plot_num, x0, VarSystem, DataSystem, best_params, fval, lambda_surface, ResistanceBEGrid, ResistanceBGrid,row,col,"Surrogate",tElapsed);
+    % %% Multistart
+    % [best_params,fval,tElapsed] = run_multistartContRC(DataSystem, VarSystem, x0, lb, ub, numStarts) 
+    % [fig, plot_num] = plotParam(fig, plot_num, x0, VarSystem, DataSystem, best_params, fval, lambda_surface, ResistanceBEGrid, ResistanceBGrid,row,col,"Multistart",tElapsed);
+    % 
+    % %% Globalsearch
+    % [best_params,fval,tElapsed] = run_globalsearchContRC(DataSystem, VarSystem, x0, lb, ub, numStarts) 
+    % [fig, plot_num] = plotParam(fig, plot_num, x0, VarSystem, DataSystem, best_params, fval, lambda_surface, ResistanceBEGrid, ResistanceBGrid,row,col,"Globalsearch",tElapsed);
+    % 
+    % %% Genetic 
+    % [best_params,fval,tElapsed] = run_geneticContRC(DataSystem, VarSystem, x0, lb, ub, numStarts) 
+    % [fig, plot_num] = plotParam(fig, plot_num, x0, VarSystem, DataSystem, best_params, fval, lambda_surface, ResistanceBEGrid, ResistanceBGrid,row,col,"Genetic",tElapsed);
+    % 
+    % %% PatternSearch
+    % [best_params, fval, tElapsed] = run_patternSearchContRC(DataSystem, VarSystem, x0, lb, ub, numStarts) 
+    % [fig, plot_num] = plotParam(fig, plot_num, x0, VarSystem, DataSystem, best_params, fval, lambda_surface, ResistanceBEGrid, ResistanceBGrid,row,col,"PatternSearch",tElapsed);
+    % 
+    % %% Simulated Annealing
+    % [best_params, fval, tElapsed] = run_simulatedAnnealingContRC(DataSystem, VarSystem, x0, lb, ub, numStarts)
+    % [fig, plot_num] = plotParam(fig, plot_num, x0, VarSystem, DataSystem, best_params, fval, lambda_surface, ResistanceBEGrid, ResistanceBGrid,row,col,"Simulated Annealing",tElapsed);
+    % 
+    % %% Surrogate 
+    % [best_params,fval,tElapsed] = run_surrogateContRC(DataSystem, VarSystem, lb, ub, numStarts)
+    % [fig, plot_num] = plotParam(fig, plot_num, x0, VarSystem, DataSystem, best_params, fval, lambda_surface, ResistanceBEGrid, ResistanceBGrid,row,col,"Surrogate",tElapsed);
 elseif(opt_mod == 2)
     %% Statistic opt
-    numOpts = 10;
+    numOpts = 5;
     numStarts = 10;
-    numPoint = [10, 10];    % plot_dens
+    numPoint = [5, 5];    % plot_dens
     
     k_range = [0.1, 0.1];
     range_delta = [(ub(1)-lb(1)), (ub(2)-lb(2))];
@@ -136,73 +139,59 @@ elseif(opt_mod == 2)
     % Определяем количество итераций
     numIterations = size(x0_matX,1)*size(x0_matY,2)*numOpts;
     
+    if(write_mod)
     %% Run statistics
+    for met = 0:5
     for i = 1:size(x0_matX,1)
         for j = 1:size(x0_matY,2)
             for k = 1:numOpts
                 x0_val = [x0_matX(i,j),x0_matY(i,j)]
+                if(met == 0)
                 %% Multistart
                 [best_params(1,i,j,k,:),fval(1,i,j,k),tElapsed(1,i,j,k)] = run_multistartContRC(DataSystem, VarSystem, x0_val, lb, ub, numStarts);
-                % [fig, plot_num] = plotParam(fig, plot_num, best_params, fval, lambda_surface, ResistanceBEGrid, ResistanceBGrid,row,col,"Multistart",tElapsed);
-            
+                elseif(met == 1)
                 %% Globalsearch
                 [best_params(2,i,j,k,:),fval(2,i,j,k),tElapsed(2,i,j,k)] = run_globalsearchContRC(DataSystem, VarSystem, x0_val, lb, ub, numStarts);
-                % [fig, plot_num] = plotParam(fig, plot_num, best_params, fval, lambda_surface, ResistanceBEGrid, ResistanceBGrid,row,col,"Globalsearch",tElapsed);
-            
+                elseif(met == 2)
                 %% Genetic 
                 [best_params(3,i,j,k,:),fval(3,i,j,k),tElapsed(3,i,j,k)] = run_geneticContRC(DataSystem, VarSystem, x0_val, lb, ub, numStarts);
-                % [fig, plot_num] = plotParam(fig, plot_num, best_params, fval, lambda_surface, ResistanceBEGrid, ResistanceBGrid,row,col,"Genetic",tElapsed);
-            
+                elseif(met == 3)
                 %% PatternSearch
                 [best_params(4,i,j,k,:), fval(4,i,j,k), tElapsed(4,i,j,k)] = run_patternSearchContRC(DataSystem, VarSystem, x0_val, lb, ub, numStarts);
-                % [fig, plot_num] = plotParam(fig, plot_num, best_params, fval, lambda_surface, ResistanceBEGrid, ResistanceBGrid,row,col,"PatternSearch",tElapsed);
-            
+                elseif(met == 4)
                 %% Simulated Annealing
                 [best_params(5,i,j,k,:), fval(5,i,j,k), tElapsed(5,i,j,k)]= run_simulatedAnnealingContRC(DataSystem, VarSystem, x0_val, lb, ub, numStarts);
-                % [fig, plot_num] = plotParam(fig, plot_num, best_params, fval, lambda_surface, ResistanceBEGrid, ResistanceBGrid,row,col,"Simulated Annealing",tElapsed);
-            
+                elseif(met == 5)
                 %% Surrogate 
                 [best_params(6,i,j,k,:),fval(6,i,j,k),tElapsed(6,i,j,k)] = run_surrogateContRC(DataSystem, VarSystem, lb, ub, numStarts);
-                % [fig, plot_num] = plotParam(fig, plot_num, best_params, fval, lambda_surface, ResistanceBEGrid, ResistanceBGrid,row,col,"Surrogate",tElapsed);
+                end
                 %% Draw progrss-bar
-                progress = ((i-1)*size(x0_matY,2)*numOpts + (j-1)*numOpts + (k-1))/numIterations;
+                progress = (((i-1)*size(x0_matY,2)*numOpts + (j-1)*numOpts + (k-1))+met*numIterations)/numIterations;
                 % numIterations = size(x0_matX,1)*size(x0_matY,2)*numOpts;
                 % Обновляем длину прогресс-бара
-                set(hProgressBar, 'Position', [0, 0, progress * 400, 20]); % 400 - ширина окна
+                set(hProgressBar, 'Position', [0, 0, progress * 359, 20]); % 400 - ширина окна
                 set(hPercentage, 'String', sprintf('%.0f%%', progress * 100)); % Отображаем проценты
             end
         end
     end
+    end
+    
+    % save("best_params_stat1","best_params");
+    % save("fval_stat1","fval");
+    % save("tElapsed_stat1","tElapsed");
+    end
 
-    save("best_params_stat1","best_params");
-    save("fval_stat1","fval");
-    save("tElapsed_stat1","tElapsed");
-    load("best_params_stat1","best_params");
-    load("fval_stat1","fval");
-    load("tElapsed_stat1","tElapsed");
+    % load("best_params_stat1","best_params");
+    % load("fval_stat1","fval");
+    % load("tElapsed_stat1","tElapsed");
 
     % % x_mat = (1:length(x0_matr))'*ones(1,10);
     % x_mat = (squeeze(x0_matr(:,1)))*ones(1,10);
     % figure()
     % scatter(x_mat, squeeze(fval(1, :, :)))
 
-    f_mean = mean(fval, 4);
-    % [x0_matX, x0_matY] = meshgrid(x0_vecX,x0_vecY);
-
-    for i = 1:size(f_mean, 1)
-        f_mat = squeeze(f_mean(i,:,:));
-        % Создаем график
-        figure; % Создаем новое окно для графика
-        surf(x0_matX, x0_matY, f_mat);%,'EdgeColor', 'None', 'facecolor', 'interp');
-        % shading interp; % Интерактивное затенение для плавного отображения градиентов
-        colorbar; % Показать цветовую шкалу
-        xlabel('X-axis'); % Подпись оси X
-        ylabel('Y-axis'); % Подпись оси Y
-        zlabel('Z-axis'); % Подпись оси Z
-        % Переключаем вид на вид сверху
-        view(2); % 2 означает вид сверху
-        axis tight; % Подгоняем оси под данные
-    end
+    plotMeanSurfaces(fval, x0_vecX, x0_vecY, minValue, max(max(max(max(fval)))), numOpts);
+    plotMeanSurfaces(tElapsed, x0_vecX, x0_vecY, min(min(min(min(tElapsed)))), max(max(max(max(tElapsed)))), numOpts);
 
 
 else
