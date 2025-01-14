@@ -2,9 +2,14 @@ function [best_params, fval, tElapsed] = run_patternSearchContRC(DataSystem, Var
     % Оптимизация lambda с использованием patternsearch
     sse_func = @(x) getFunctionSystemUnoCont(x, DataSystem, VarSystem);
 
+    % opts = optimoptions(@patternsearch, ...
+    %                     'Display', 'iter', ...  % Отображение прогресса
+    %                     'MaxIterations', numStarts, ... % Максимальное количество итераций
+    %                     'PlotFcn', @psplotbestf, ...
+    %                     'UseParallel', false); % Использование параллельных вычислений
+
     opts = optimoptions(@patternsearch, ...
                         'Display', 'iter', ...  % Отображение прогресса
-                        'MaxIterations', numStarts, ... % Максимальное количество итераций
                         'PlotFcn', @psplotbestf, ...
                         'UseParallel', false); % Использование параллельных вычислений
 
