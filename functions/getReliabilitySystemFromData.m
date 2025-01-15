@@ -35,6 +35,8 @@ function [lambda] = getReliabilitySystemFromData(DataSystem, VarSystem)
     % System
     lambda = lambda_Capacitor + lambda_Resistor_B + lambda_Resistor_BE + lambda_Transistor + lambda_Resistor_E;
 
+    lambda = abs(lambda);
+
 %% Var and Param
     % % Capacitor
     % capacity  % In picoPharad
