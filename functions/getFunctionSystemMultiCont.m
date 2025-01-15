@@ -5,8 +5,8 @@ function F = getFunctionSystemMultiCont(x, DataSystem, VarSystem)
     VarSystem.resistance_E = x(2);
     % x;
     
-    [f1,f2] = getReliabilityResInSystemFromData(DataSystem, VarSystem);  
+    [lambda, rin] = getReliabilityResInSystemFromData(DataSystem, VarSystem);  
 
-    F = [-f2, f1];  
+    F = [-rin, lambda];  
 
 end

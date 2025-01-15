@@ -86,7 +86,7 @@ scatter(pareto_x,pareto_y,'black','<','filled','SizeData',40)
 grid
 xlabel('Y: R_{in} (Ω)');
 ylabel('X: Lambda (Failure Rate)');
-xlim([0 6]*1e7)
+xlim([0 1]*1e7)
 ylim([0 6]*1e-8)
 %% fminimax
 % [best_params,fval,tElapsed] = run_fminimaxContRC_multi(DataSystem, VarSystem, x0, lb, ub, numStarts) 
@@ -95,26 +95,50 @@ ylim([0 6]*1e-8)
 % [best_params,fval,tElapsed] = run_fgoalattainContRC_multi(DataSystem,goal,weight, VarSystem, x0, lb, ub, numStarts) 
 %% gamultiobj
 [best_params1,fval1,tElapsed1] = run_gamultiobjContRC_multi(DataSystem, VarSystem, lb, ub, numStarts);
-[fig1] = plotParetto(-fval1(:,1),fval1(:,2),"gamultiobj");
+fval1 = abs(fval1);
+[fig1] = plotParetto(fval1(:,1),fval1(:,2),"gamultiobj");
 
 %% paretosearch
 [best_params2,fval2,tElapsed2] = run_paretosearchContRC_multi(DataSystem, VarSystem, lb, ub, numStarts);
-[fig2] = plotParetto(-fval2(:,1),fval2(:,2),"paretosearch");
+fval2 = abs(fval2);
+[fig2] = plotParetto(fval2(:,1),fval2(:,2),"paretosearch");
+%%
+figure
+scatter(fval1(:,1),fval1(:,2),'red','filled','o','SizeData' ,200)
+grid
+legend("Pareto solve")
+title("gamultiobj")
+xlabel('X: R_{in} (Ω)');
+ylabel('Y: Lambda (Failure Rate)');
+xlim([0 1]*1e7)
+ylim([0 6]*1e-8)
+
+%%
+figure
+scatter(fval2(:,1),fval2(:,2),'blue','filled','o','SizeData',200)
+grid
+legend("Pareto solve")
+title("paretosearch")
+xlabel('X: R_{in} (Ω)');
+ylabel('Y: Lambda (Failure Rate)');
+xlim([0 1]*1e7)
+ylim([0 6]*1e-8)
 
 %%
 figure
 scatter(pareto_x,pareto_y,'black','<','filled','SizeData',40)
 hold on
-scatter(-fval1(:,1),fval1(:,2),'red','filled','o','SizeData' ,200)
-scatter(-fval2(:,1),fval2(:,2),'blue','filled','o','SizeData',200)
+scatter(fval1(:,1),fval1(:,2),'red','filled','o','SizeData' ,200)
+scatter(fval2(:,1),fval2(:,2),'blue','filled','o','SizeData',200)
 hold off
 grid
 legend("Thrue Paretto front","gamultiobj","paretosearch")
 title("Compare")
-ylabel('Y: R_{in} (Ω)');
-xlabel('X: Lambda (Failure Rate)');
-xlim([0 6]*1e7)
+xlabel('X: R_{in} (Ω)');
+ylabel('Y: Lambda (Failure Rate)');
+xlim([0 1]*1e7)
 ylim([0 6]*1e-8)
+
 %%
 function [fig] = plotParetto(fx,fy,name)
     fig = figure;
