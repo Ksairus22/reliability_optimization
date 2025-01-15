@@ -42,7 +42,7 @@ plot_num = [];
 fig = [];
 plot_dens = 100;
 opt_mod = 2;
-write_mod = 0;
+write_mod = 1;
 
 %% строить поверхность долго
 % Задаем диапазоны значений
@@ -170,48 +170,47 @@ hold off;
                             'String', '0%', 'FontSize', 10, ...
                             'HorizontalAlignment', 'center');
     % Определяем количество итераций
-    numIterations = size(x0_matX,1)*size(x0_matY,2)*numOpts;
+    numIterations = 6*size(x0_matX,1)*size(x0_matY,2)*numOpts;
     
-    progress_cnt = 0;
+    
     if(write_mod)
     %% Run statistics
-    cnt = 0;
+    for met = 0:5
     for i = 1:size(x0_matX,1)
         for j = 1:size(x0_matY,2)
             for k = 1:numOpts
                 x0_val = [x0_matX(i,j),x0_matY(i,j)]
-                %% Multistart
-                [best_params(1,i,j,k,:),fval(1,i,j,k),tElapsed(1,i,j,k)] = run_multistartContRC(DataSystem, VarSystem, x0_val, lb, ub, numStarts);
-                % [fig, plot_num] = plotParam(fig, plot_num, best_params, fval, lambda_surface, ResistanceBEGrid, ResistanceBGrid,row,col,"Multistart",tElapsed);
-            
-                %% Globalsearch
-                [best_params(2,i,j,k,:),fval(2,i,j,k),tElapsed(2,i,j,k)] = run_globalsearchContRC(DataSystem, VarSystem, x0_val, lb, ub, numStarts);
-                % [fig, plot_num] = plotParam(fig, plot_num, best_params, fval, lambda_surface, ResistanceBEGrid, ResistanceBGrid,row,col,"Globalsearch",tElapsed);
-            
-                %% Genetic 
-                [best_params(3,i,j,k,:),fval(3,i,j,k),tElapsed(3,i,j,k)] = run_geneticContRC(DataSystem, VarSystem, x0_val, lb, ub, numStarts);
-                % [fig, plot_num] = plotParam(fig, plot_num, best_params, fval, lambda_surface, ResistanceBEGrid, ResistanceBGrid,row,col,"Genetic",tElapsed);
-            
-                %% PatternSearch
-                [best_params(4,i,j,k,:), fval(4,i,j,k), tElapsed(4,i,j,k)] = run_patternSearchContRC(DataSystem, VarSystem, x0_val, lb, ub, numStarts);
-                % [fig, plot_num] = plotParam(fig, plot_num, best_params, fval, lambda_surface, ResistanceBEGrid, ResistanceBGrid,row,col,"PatternSearch",tElapsed);
-            
-                %% Simulated Annealing
-                [best_params(5,i,j,k,:), fval(5,i,j,k), tElapsed(5,i,j,k)]= run_simulatedAnnealingContRC(DataSystem, VarSystem, x0_val, lb, ub, numStarts);
-                % [fig, plot_num] = plotParam(fig, plot_num, best_params, fval, lambda_surface, ResistanceBEGrid, ResistanceBGrid,row,col,"Simulated Annealing",tElapsed);
-            
-                %% Surrogate 
-                [best_params(6,i,j,k,:), fval(6,i,j,k), tElapsed(6,i,j,k)] = run_surrogateContRC(DataSystem, VarSystem, lb, ub, numStarts);
-                % [fig, plot_num] = plotParam(fig, plot_num, best_params, fval, lambda_surface, ResistanceBEGrid, ResistanceBGrid,row,col,"Surrogate",tElapsed);
+                switch met
+                    case 0
+                    %% Multistart
+                        [best_params(1,i,j,k,:),fval(1,i,j,k),tElapsed(1,i,j,k)] = run_multistartContRC(DataSystem, VarSystem, x0_val, lb, ub, numStarts);
+                    case 1
+                    %% Globalsearch
+                        [best_params(2,i,j,k,:),fval(2,i,j,k),tElapsed(2,i,j,k)] = run_globalsearchContRC(DataSystem, VarSystem, x0_val, lb, ub, numStarts);
+                    case 2
+                    %% Genetic 
+                        [best_params(3,i,j,k,:),fval(3,i,j,k),tElapsed(3,i,j,k)] = run_geneticContRC(DataSystem, VarSystem, x0_val, lb, ub, numStarts);
+                    case 3
+                    %% PatternSearch
+                        [best_params(4,i,j,k,:), fval(4,i,j,k), tElapsed(4,i,j,k)] = run_patternSearchContRC(DataSystem, VarSystem, x0_val, lb, ub, numStarts);
+                    case 4
+                    %% Simulated Annealing
+                        [best_params(5,i,j,k,:), fval(5,i,j,k), tElapsed(5,i,j,k)]= run_simulatedAnnealingContRC(DataSystem, VarSystem, x0_val, lb, ub, numStarts);
+                    case 5
+                    %% Surrogate 
+                        [best_params(6,i,j,k,:), fval(6,i,j,k), tElapsed(6,i,j,k)] = run_surrogateContRC(DataSystem, VarSystem, lb, ub, numStarts);
+                    otherwise
+                        error("why you here")
+                end
                 %% Draw progrss-bar
-                progress_cnt  = progress_cnt +1;
-                progress = progress_cnt/(size(x0_matX,1)*size(x0_matX,2)*numOpts);
-                % numIterations = size(x0_matX,1)*size(x0_matY,2)*numOpts;
+                progress = ((met)*size(x0_matX,1)*size(x0_matY,2)*numOpts + (i-1)*size(x0_matY,2)*numOpts + (j-1)*numOpts + (k-1))/numIterations;
+                numIterations = 6*size(x0_matX,1)*size(x0_matY,2)*numOpts;
                 % Обновляем длину прогресс-бара
                 set(hProgressBar, 'Position', [0, 0, progress * 320, 20]); % 400 - ширина окна
                 set(hPercentage, 'String', sprintf('%.0f%%', progress * 100)); % Отображаем проценты
             end
         end
+    end
     end
     
     save("best_params_stat1","best_params");

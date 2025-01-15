@@ -7,6 +7,6 @@ function F = getFunctionSystemMultiCont(x, DataSystem, VarSystem)
     
     [f1,f2] = getReliabilityResInSystemFromData(DataSystem, VarSystem);  
 
-    F = [f1, -f2];  
+    F = [-f2, f1];  
 
 end

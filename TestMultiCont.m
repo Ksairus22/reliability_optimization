@@ -25,15 +25,15 @@ FilenameSystem.Transistors = 'table_reliability_transistor.xlsx';
 
 %% optimization
 goalfreq = 1000; 
-x0 = [0.25e+6 0.25e+6];  
-lb = [1000 1000]; 
-ub = [0.5e+6 0.5e+6]; 
+x0 = [3e5 3e5]; 
+lb = [1e3 1e3]; 
+ub = [.5e6 .5e6]; 
 
 % Использование fminimax
 % [x_fm, fval_fm] = fminimax(fun, x0, [], [], [], [], lb, ub, nlcon, options);
 goal = [0,-inf];
 weight = [1,1];
-numStarts = 100;
+numStarts = 1000;
 %% строить поверхность долго
 % Задаем диапазоны значений для capacity и resistance_k
 resistance_b_range = linspace(lb(1),ub(1),100);
@@ -82,20 +82,47 @@ for i=1:height(lambda_surface.lambda_surface)
     end
     pareto_y(i) = min(tmp2);
 end
-scatter(pareto_y,pareto_x,'black','<','filled','SizeData',40)
+scatter(pareto_x,pareto_y,'black','<','filled','SizeData',40)
 grid
-ylabel('Y: R_{in} (Ω)');
-xlabel('X: Lambda (Failure Rate)');
+xlabel('Y: R_{in} (Ω)');
+ylabel('X: Lambda (Failure Rate)');
+xlim([0 6]*1e7)
+ylim([0 6]*1e-8)
 %% fminimax
 % [best_params,fval,tElapsed] = run_fminimaxContRC_multi(DataSystem, VarSystem, x0, lb, ub, numStarts) 
 
 %% fgoalattain
 % [best_params,fval,tElapsed] = run_fgoalattainContRC_multi(DataSystem,goal,weight, VarSystem, x0, lb, ub, numStarts) 
 %% gamultiobj
-[best_params,fval,tElapsed] = run_gamultiobjContRC_multi(DataSystem, VarSystem, lb, ub, numStarts)
+[best_params1,fval1,tElapsed1] = run_gamultiobjContRC_multi(DataSystem, VarSystem, lb, ub, numStarts);
+[fig1] = plotParetto(-fval1(:,1),fval1(:,2),"gamultiobj");
 
 %% paretosearch
-[best_params,fval,tElapsed] = run_paretosearchContRC_multi(DataSystem, VarSystem, lb, ub, numStarts)
+[best_params2,fval2,tElapsed2] = run_paretosearchContRC_multi(DataSystem, VarSystem, lb, ub, numStarts);
+[fig2] = plotParetto(-fval2(:,1),fval2(:,2),"paretosearch");
 
-
-
+%%
+figure
+scatter(pareto_x,pareto_y,'black','<','filled','SizeData',40)
+hold on
+scatter(-fval1(:,1),fval1(:,2),'red','filled','o','SizeData' ,200)
+scatter(-fval2(:,1),fval2(:,2),'blue','filled','o','SizeData',200)
+hold off
+grid
+legend("Thrue Paretto front","gamultiobj","paretosearch")
+title("Compare")
+ylabel('Y: R_{in} (Ω)');
+xlabel('X: Lambda (Failure Rate)');
+xlim([0 6]*1e7)
+ylim([0 6]*1e-8)
+%%
+function [fig] = plotParetto(fx,fy,name)
+    fig = figure;
+    scatter(fx,fy)
+    title(name);
+    grid
+    xlabel('Y: R_{in} (Ω)');
+    ylabel('X: Lambda (Failure Rate)');
+    xlim([0 6]*1e7)
+    ylim([0 6]*1e-8)
+end

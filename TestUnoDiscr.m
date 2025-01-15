@@ -28,9 +28,13 @@ lb = [1 1];
 ub = [81 225]-1; 
 x0 = [1 1];
 numVar = 2;
+numStarts = 100; 
 plot_num = [];
 fig = [];
-numStarts = 100; 
+plot_dens = 100;
+opt_mod = 2;
+write_mod = 0;
+
 %% строить поверхность долго
 % Задаем диапазоны значений для capacity и resistance_k
 resistance_range = lb(1):ub(1);
