@@ -8,4 +8,5 @@ function [lambda] = getReliabilityCapacitorFromData(data, rownum,capacity, U, t)
     % 
     % get lambda ->
     lambda = getReliabilityCapacitor(capacitor_struct, K_c, K_r);
+
 end

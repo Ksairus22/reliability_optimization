@@ -57,9 +57,7 @@ function params = calculateDirectCircuitParamsUPD(inputStruct)
 
     Pb = Ub^2 / Rb;
     Pbe = (Us - Ub)^2 / Rbe;
-    
-
-    
+        
     Ub = I_Rbe * Rbe;
     Ue = Ub - Ube;
     Ie = I_Re;
