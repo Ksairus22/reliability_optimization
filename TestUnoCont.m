@@ -37,12 +37,12 @@ drawing.x = []; % Инициализация массива x
 x0 = [3e5 3e5]; 
 lb = [1e3 1e3]; 
 ub = [.5e6 .5e6]; 
-numStarts = 100; 
+numStarts = 40; 
 plot_num = [];
 fig = [];
 plot_dens = 100;
 opt_mod = 2;
-write_mod = 1;
+write_mod = 0;
 
 %% строить поверхность долго
 % Задаем диапазоны значений
@@ -115,10 +115,13 @@ if(opt_mod == 1)
     %% Surrogate 
     [best_params,fval,tElapsed] = run_surrogateContRC(DataSystem, VarSystem, lb, ub, numStarts)
     [fig, plot_num] = plotParam(fig, plot_num, x0, VarSystem, DataSystem, best_params, fval, lambda_surface, ResistanceBEGrid, ResistanceBGrid,row,col,"Surrogate",tElapsed);
+    
+folderName = 'figures\traektfigures_unocont';
+save_all_figures(folderName);  
 elseif(opt_mod == 2)
     %% Statistic opt
     numOpts = 5;
-    numStarts = 10;
+    numStarts = 40;
     numPoint = [5, 5];    % plot_dens
     
     k_range = [0.1, 0.1];
@@ -227,24 +230,35 @@ hold off;
     % figure()
     % scatter(x_mat, squeeze(fval(1, :, :)))
 
-% plotMeanSurfaces(fval, x0_vecX, x0_vecY, minValue, max(max(max(max(fval)))), numOpts);
+plotMeanSurfaces(fval, x0_vecX, x0_vecY, minValue, max(max(max(max(fval)))), numOpts);
 plotMeanSurfaces(tElapsed, x0_vecX, x0_vecY, min(min(min(min(tElapsed)))), max(max(max(max(tElapsed)))), numOpts);
-
+folderName = 'figures\statfigures_unocont';
+save_all_figures(folderName);   
 
 
 else
     warning('Uncorrect opt mod');
 end
-msgbox('негры');
+msgbox('Success');
 
 
 function [fig, plot_num] = plotParam(fig, plot_num, x0, VarSystem, DataSystem, best_params, fval, lambda_surface, ResistanceBEGrid, ResistanceBGrid,row,col,name,tElapsed)
+fontsz = 7; 
     if(isempty(fig) || isempty(plot_num))
         plot_num = 1;
     end
-    fig = [fig figure()];
+    % Ширина и высота каждой фигуры
+    xPos = 100;
+    yPos = 100;
+    mul = 0.8;
+    figWidth = mul*600;
+    figHeight = mul*450;
+    fig = [fig figure('Position', [xPos, yPos, figWidth, figHeight]);];
 
 surf(ResistanceBEGrid, ResistanceBGrid, lambda_surface.lambda_surface,'EdgeColor','none', 'FaceAlpha', 0.5);
+ax = gca;
+% ax.ZDir="reverse";
+
 
 xlabel('X: Resistance_{be} (Ω)');
 ylabel('Y: Resistance_{b} (Ω)');
@@ -255,6 +269,11 @@ colorbar; % Добавляем цветовую панель для обозна
     hold on 
     sc = scatter3(best_params(1),best_params(2),fval,'red','square','filled','SizeData',400); 
     dt=datatip(sc);
+    dt.Location="northwest";
+% 
+% Настройка свойств datatip
+set(dt, 'FontSize', fontsz); % Уменьшение размера шрифта
+% 
     % min(min(lambda_surface.lambda_surface)
 
     % Создаем матрицу размером 70x70 с одинаковыми строками
@@ -264,11 +283,16 @@ matrixString = strings(height(ResistanceBGrid), width(ResistanceBGrid));
 matrixString(:) = name; % замените "element" на желаемое 
 
 aa = dataTipTextRow('label',matrixString);
+
 sc.DataTipTemplate.DataTipRows(end+1) = aa;
 
     
     sc = scatter3(ResistanceBEGrid(row,col),ResistanceBGrid(row,col),lambda_surface.lambda_surface(row,col),'green','square','filled','SizeData',400); 
     dt=datatip(sc);
+    dt.Location="northeast";
+% Настройка свойств datatip
+set(dt, 'FontSize', fontsz); % Уменьшение размера шрифта
+
 % % % 
 % % % 
 % Заполняем матрицу одинаковым элементом
@@ -277,11 +301,15 @@ matrixString1(:) = 'x_0'; % замените "element" на желаемое
 
 sc1 = scatter3(x0(1),x0(2),getFunctionSystemUnoCont(x0, DataSystem, VarSystem),'magenta','square','filled','SizeData',400); 
 bb = dataTipTextRow('label',matrixString1);
+
 sc1.DataTipTemplate.DataTipRows(end+1) = bb;
 
     
 
     dt1=datatip(sc1);
+% Настройка свойств datatip
+set(dt1, 'FontSize', fontsz); % Уменьшение размера шрифта
+
 % % % 
 % % % 
 % Заполняем матрицу одинаковым элементом
@@ -339,6 +367,7 @@ end
 
 disp('Table appended successfully!');
 clear_drawing();
+
 end
 
 function clear_drawing()
