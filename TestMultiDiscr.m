@@ -24,68 +24,57 @@ FilenameSystem.Transistors = 'table_reliability_transistor.xlsx';
 [VarSystem] = getVarSystem();
 
 %% optimization
-lb = [1 1]; 
-ub = [81 225]-1; 
-x0 = [30 1];
+lb = [1 1 1 1 1]; 
+ub = [117 2 81 81 225]-1; 
+x0 = [1 1 1 1 1];
 %% строить поверхность долго
 % Задаем диапазоны значений для capacity и resistance_k
-resistor_range = lb(1):ub(1);
-transistor_range = lb(2):ub(2);
+resistance_b_range = linspace(lb(1),ub(1),100);
+resistance_e_range = linspace(lb(2),ub(2),100);
 
 
 % Создаем сетку значений
-[ResistorsGrid, TransistorGrid] = meshgrid(resistor_range, transistor_range);
+[ResistanceBGrid, ResistanceEGrid] = meshgrid(resistance_b_range, resistance_e_range);
 
 % % Предварительно создаем матрицу для хранения результатов
-% lambda_surface = zeros(size(ResistorsGrid));
-% rin_surface = zeros(size(ResistorsGrid));
+% lambda_surface = zeros(size(ResistanceBGrid));
+% rin_surface = zeros(size(ResistanceBGrid));
 % % Вычисляем lambda для каждой комбинации capacity и resistance_k
-% for i = 1:size(ResistorsGrid, 1)
-%     for j = 1:size(ResistorsGrid, 2)
-%         VarSystem.IteratorCapacitor   = VarSystem.IteratorCapacitor;
-%         VarSystem.IteratorDiod        = VarSystem.IteratorDiod;
-%         VarSystem.IteratorResistor_B  = ResistorsGrid(i,j);
-%         VarSystem.IteratorResistor_BE = ResistorsGrid(i,j);
-%         VarSystem.IteratorResistor_E  = ResistorsGrid(i,j);
-%         VarSystem.IteratorTransistor  = TransistorGrid(i,j);
-    
-%         VarSystem.capacity     = VarSystem.capacity;
-%         VarSystem.resistance_B = VarSystem.resistance_B;
-%         VarSystem.resistance_BE= VarSystem.resistance_BE;
-%         VarSystem.resistance_E = VarSystem.resistance_E;
-    
+% for i = 1:size(ResistanceBGrid, 1)
+%     for j = 1:size(ResistanceBGrid, 2)
+%         [VarSystem] = getVarSystemVariable(VarSystem.IteratorCapacitor, VarSystem.IteratorDiod, VarSystem.IteratorResistor_B, VarSystem.IteratorResistor_BE,...
+%     VarSystem.IteratorResistor_E, VarSystem.IteratorTransistor, VarSystem.t, VarSystem.capacity,...
+%     ResistanceBGrid(i, j),ResistanceBGrid(i, j), ResistanceEGrid(i, j), VarSystem.goalfreq)
 %         [lambda_surface(i, j), rin_surface(i, j)] = getReliabilityResInSystemFromData(DataSystem, VarSystem);
 %     end
 % end
-% save("lambda5_1","lambda_surface")
-% save("rin5_1","rin_surface")
-
-lambda_surface = load("lambda5_1","lambda_surface");
-rin_surface = load("rin5_1","rin_surface");
+% save("lambda4_1","lambda_surface")
+% save("rin4_1","rin_surface")
+lambda_surface = load("lambda4_1","lambda_surface");
+rin_surface = load("rin4_1","rin_surface");
 % Построение 3D поверхности
 figure;
-surf(ResistorsGrid, TransistorGrid, lambda_surface.lambda_surface,'EdgeColor','none');
+surf(ResistanceBGrid, ResistanceEGrid, lambda_surface.lambda_surface,'EdgeColor','none');
 xlabel('X: Resistance_{b} (Ω)');
 ylabel('Y: Resistance_{e} (Ω)');
 zlabel('Z: Lambda (Failure Rate)');
 figure;
-surf(ResistorsGrid, TransistorGrid, rin_surface.rin_surface,'EdgeColor','none');
+surf(ResistanceBGrid, ResistanceEGrid, rin_surface.rin_surface,'EdgeColor','none');
 xlabel('X: Resistance_{b} (Ω)');
 ylabel('Y: Resistance_{e} (Ω)');
 zlabel('Z: R_{in} (Ω)');
 
 figure 
-% shift=height(lambda_surface.lambda_surface);
+shift=height(lambda_surface.lambda_surface);
 matr1_r=rin_surface.rin_surface;
 matr1_lam=lambda_surface.lambda_surface;
-% for i=1:height(lambda_surface.lambda_surface)
-%         pareto_x(i) = matr1_r(i,1);
-%     for j=1:height(lambda_surface.lambda_surface)
-%         tmp2(j) = matr1_lam(i,j);
-%     end
-%     pareto_y(i) = min(tmp2);
-% end
-paretoFront = getParetoFront(matr1_r, matr1_lam)
+for i=1:height(lambda_surface.lambda_surface)
+        pareto_x(i) = matr1_r(i,1);
+    for j=1:height(lambda_surface.lambda_surface)
+        tmp2(j) = matr1_lam(i,j);
+    end
+    pareto_y(i) = min(tmp2);
+end
 scatter(pareto_y,pareto_x,'black','<','filled','SizeData',40)
 grid
 ylabel('Y: R_{in} (Ω)');

@@ -1,8 +1,9 @@
 function [lambda] = getReliabilitySystemFromData(DataSystem, VarSystem)
 
     electric_parameters = calculateCircuitParamsStruct(DataSystem,VarSystem);
-    % electric_parameters.Rb
-    
+    % if electric_parameters.Output.validation == 0
+    %     lambda = NaN;
+    % else
     % Capacitor
     lambda_Capacitor = getReliabilityCapacitorFromData(...
         DataSystem.Capacitor, VarSystem.IteratorCapacitor,VarSystem.capacity, ...
@@ -36,7 +37,7 @@ function [lambda] = getReliabilitySystemFromData(DataSystem, VarSystem)
     lambda = lambda_Capacitor + lambda_Resistor_B + lambda_Resistor_BE + lambda_Transistor + lambda_Resistor_E;
 
     lambda = abs(lambda);
-
+    % end
 %% Var and Param
     % % Capacitor
     % capacity  % In picoPharad

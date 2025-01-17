@@ -15,7 +15,8 @@ tStart = tic;
 [best_params, fval, exitflag] = ga(sse_func, numVar, [], [], [], [], ...
     lb, ub, [], 1, opts);
 
-best_params=best_params+1;
+% best_params=best_params+1;
+best_params=best_params;
 
 tElapsed = toc(tStart); 
 

@@ -49,27 +49,27 @@ transistor_range = lb(1):ub(1);
 % Создаем сетку значений
 [TransitorGrid, ResistanceGrid] = meshgrid(transistor_range,resistance_range);
 
-% % Предварительно создаем матрицу для хранения результатов
-% lambda_surface = zeros(size(TransitorGrid));
-% 
-% % Вычисляем lambda для каждой комбинации capacity и resistance_k
-% for i = 1:size(TransitorGrid, 1)
-%     for j = 1:size(TransitorGrid, 2)
-%         [VarSystem] = getVarSystemVariable(VarSystem.IteratorCapacitor, VarSystem.IteratorDiod, VarSystem.IteratorResistor_B, VarSystem.IteratorResistor_BE,...
-%     VarSystem.IteratorResistor_E, TransitorGrid(i,j), VarSystem.t, VarSystem.capacity,...
-%     ResistanceGrid(i,j),ResistanceGrid(i,j), VarSystem.resistance_E, VarSystem.goalfreq)
-%         lambda_surface(i, j) = getReliabilitySystemFromData(DataSystem, VarSystem);
-%     end
-% end
-% save("lambda3","lambda_surface")
+% Предварительно создаем матрицу для хранения результатов
+lambda_surface = zeros(size(TransitorGrid));
+
+% Вычисляем lambda для каждой комбинации capacity и resistance_k
+for i = 1:size(TransitorGrid, 1)
+    for j = 1:size(TransitorGrid, 2)
+        [VarSystem] = getVarSystemVariable(VarSystem.IteratorCapacitor, VarSystem.IteratorDiod, VarSystem.IteratorResistor_B, VarSystem.IteratorResistor_BE,...
+    VarSystem.IteratorResistor_E, TransitorGrid(i,j), VarSystem.t, VarSystem.capacity,...
+    ResistanceGrid(i,j),ResistanceGrid(i,j), VarSystem.resistance_E, VarSystem.goalfreq)
+        lambda_surface(i, j) = getReliabilitySystemFromData(DataSystem, VarSystem);
+    end
+end
+save("lambda3","lambda_surface")
 lambda_surface = load("lambda3","lambda_surface");
 % Построение 3D поверхности
 figure;
 % surf(TransitorGrid, ResistanceGrid, lambda_surface.lambda_surface,'EdgeColor','none');
 % Ограничение значений z
-% z_limit = [0 10e-8]; % Задаем пределы для z
-% lambda_surface.lambda_surface(lambda_surface.lambda_surface < z_limit(1)) = NaN; % Убираем значения меньше нижнего предела
-% lambda_surface.lambda_surface(lambda_surface.lambda_surface > z_limit(2)) = NaN; % Убираем значения больше 
+z_limit = [0 10e-8]; % Задаем пределы для z
+lambda_surface.lambda_surface(lambda_surface.lambda_surface < z_limit(1)) = NaN; % Убираем значения меньше нижнего предела
+lambda_surface.lambda_surface(lambda_surface.lambda_surface > z_limit(2)) = NaN; % Убираем значения больше 
 contourf(TransitorGrid, ResistanceGrid, lambda_surface.lambda_surface);
 % zlim([0 20e-8])
 % caxis([0 20e-8])
