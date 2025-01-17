@@ -7,8 +7,8 @@ fun = @(x) getFunctionSystemMultiDiscr(x, DataSystem, VarSystem);
 options = optimoptions('gamultiobj', ...
     'PlotFcn', {@gaplotpareto, @gaplotbestf, @gaplotrange, @gaplotspread});
 tStart = tic;
-
-[best_params, fval] = gamultiobj(fun,5,[],[],[],[],lb,ub,[],1:5,options);
+numVars = 2;
+[best_params, fval] = gamultiobj(fun,numVars,[],[],[],[],lb,ub,[],1:numVars,options);
 
 tElapsed = toc(tStart); 
 

@@ -84,8 +84,8 @@ for i=1:height(lambda_surface.lambda_surface)
 end
 scatter(pareto_x,pareto_y,'black','<','filled','SizeData',40)
 grid
-xlabel('Y: R_{in} (Ω)');
-ylabel('X: Lambda (Failure Rate)');
+xlabel('X: R_{in} (Ω)');
+ylabel('Y: Lambda (Failure Rate)');
 xlim([0 1]*1e7)
 ylim([0 6]*1e-8)
 %% fminimax
@@ -145,8 +145,8 @@ function [fig] = plotParetto(fx,fy,name)
     scatter(fx,fy)
     title(name);
     grid
-    xlabel('Y: R_{in} (Ω)');
-    ylabel('X: Lambda (Failure Rate)');
+    xlabel('X: R_{in} (Ω)');
+    ylabel('Y: Lambda (Failure Rate)');
     xlim([0 6]*1e7)
     ylim([0 6]*1e-8)
 end
