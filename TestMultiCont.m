@@ -20,7 +20,6 @@ FilenameSystem.Transistors = 'table_reliability_transistor.xlsx';
 
 % Предварительная загрузка данных 
 [DataSystem] = getTableSystemData(FilenameSystem); 
-
 [VarSystem] = getVarSystem();
 
 %% optimization
